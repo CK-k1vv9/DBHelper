@@ -20,10 +20,8 @@ namespace DBUtil
     public class SqlString
     {
         #region 变量属性
-        /// <summary>
-        /// 数据库类型
-        /// </summary>
-        private static string m_DBType = ConfigurationManager.AppSettings["DBType"];
+
+        private IProvider _provider;
 
         private StringBuilder _sql = new StringBuilder();
 
@@ -43,8 +41,9 @@ namespace DBUtil
         #endregion
 
         #region 构造函数
-        public SqlString(string sql, params object[] args)
+        public SqlString(IProvider provider, string sql, params object[] args)
         {
+            _provider = provider;
             AppendSql(sql, args);
         }
         #endregion
@@ -74,7 +73,7 @@ namespace DBUtil
             List<string> keyList = dict.Keys.ToList();
             for (int i = 0; i < keyList.Count; i++)
             {
-                _paramList.Add(DBHelper.GetDbParameter(keyList[i], args[i]));
+                _paramList.Add(_provider.GetDbParameter(keyList[i], args[i]));
             }
 
             _sql.Append(sql);
@@ -104,7 +103,7 @@ namespace DBUtil
         #region ReplaceSql
         private string ReplaceSql(string sql, string oldStr, string name)
         {
-            string newStr = DBHelper.GetParameterMark() + name;
+            string newStr = _provider.GetParameterMark() + name;
             return sql.Replace(oldStr, newStr);
         }
         #endregion

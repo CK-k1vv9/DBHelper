@@ -1,7 +1,7 @@
-﻿using MySql.Data.MySqlClient;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Data.SQLite;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,28 +9,28 @@ using System.Threading.Tasks;
 namespace DBUtil
 {
     /// <summary>
-    /// MySQL 数据库实现
+    /// MSSQL 数据库实现
     /// </summary>
-    public class MySQLProvider : IProvider
+    public class SQLiteProvider : IProvider
     {
         #region 创建 DbConnection
         public DbConnection CreateConnection(string connectionString)
         {
-            return new MySqlConnection(connectionString);
+            return new SQLiteConnection(connectionString);
         }
         #endregion
 
         #region 生成 DbCommand
         public DbCommand GetCommand()
         {
-            return new MySqlCommand();
+            return new SQLiteCommand();
         }
         #endregion
 
         #region 生成 DbCommand
         public DbCommand GetCommand(string sql, DbConnection conn)
         {
-            DbCommand command = new MySqlCommand(sql);
+            DbCommand command = new SQLiteCommand(sql);
             command.Connection = conn;
             return command;
         }
@@ -39,14 +39,14 @@ namespace DBUtil
         #region 生成 DbParameter
         public DbParameter GetDbParameter(string name, object vallue)
         {
-            return new MySqlParameter(name, vallue);
+            return new SQLiteParameter(name, vallue);
         }
         #endregion
 
         #region 生成 DbDataAdapter
         public DbDataAdapter GetDataAdapter(DbCommand cmd)
         {
-            DbDataAdapter dataAdapter = new MySqlDataAdapter();
+            DbDataAdapter dataAdapter = new SQLiteDataAdapter();
             dataAdapter.SelectCommand = cmd;
             return dataAdapter;
         }
@@ -55,14 +55,14 @@ namespace DBUtil
         #region GetParameterMark
         public string GetParameterMark()
         {
-            return "@";
+            return ":";
         }
         #endregion
 
         #region 创建获取最大编号SQL
         public string CreateGetMaxIdSql(string key, Type type)
         {
-            return string.Format("SELECT Max({0}) FROM {1}", key, type.Name);
+            return string.Format("SELECT Max(cast({0} as int)) FROM {1}", key, type.Name);
         }
         #endregion
 
@@ -76,14 +76,13 @@ namespace DBUtil
             #region 分页查询语句
             startRow = pageSize * (currentPage - 1);
 
-            sb.Append("select * from (");
             sb.Append(sql);
             if (!string.IsNullOrWhiteSpace(orderby))
             {
                 sb.Append(" ");
                 sb.Append(orderby);
             }
-            sb.AppendFormat(" ) row_limit limit {0},{1}", startRow, pageSize);
+            sb.AppendFormat(" limit {0} offset {1}", pageSize, startRow);
             #endregion
 
             return sb.ToString();

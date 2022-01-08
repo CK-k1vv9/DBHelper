@@ -35,7 +35,6 @@
       <HintPath>..\packages\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Data.OracleClient" />
@@ -54,12 +53,18 @@
     <Compile Include="DBHelper.cs" />
     <Compile Include="Attributes\IsDBFieldAttribute.cs" />
     <Compile Include="Attributes\IsIdAttribute.cs" />
-    <Compile Include="Factory\DBFactory.cs" />
-    <Compile Include="Factory\PageSqlFactory.cs" />
+    <Compile Include="IDBHelper.cs" />
+    <Compile Include="Session\DBSession.cs" />
+    <Compile Include="Enums\DBType.cs" />
     <Compile Include="Models\PagerModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Provider\AccessProvider.cs" />
     <Compile Include="Provider\IProvider.cs" />
+    <Compile Include="Provider\MSSQLProvider.cs" />
     <Compile Include="Provider\MySQLProvider.cs" />
+    <Compile Include="Provider\OracleProvider.cs" />
+    <Compile Include="Factory\ProviderFactory.cs" />
+    <Compile Include="Provider\SQLiteProvider.cs" />
     <Compile Include="Session\ISession.cs" />
     <Compile Include="Utils\EmitUtil.cs" />
     <Compile Include="Utils\PropertiesCache.cs" />

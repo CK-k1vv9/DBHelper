@@ -2,6 +2,7 @@
 using Models;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,13 +15,17 @@ namespace DAL
     /// </summary>
     public class BsOrderDal
     {
+        #region 变量
+        private IDBHelper dbHelper = ServiceHelper.Get<IDBHelper>(() => new DBHelper(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString(), DBType.MySQL));
+        #endregion
+
         #region 添加
         /// <summary>
         /// 添加
         /// </summary>
         public string Insert(BS_ORDER order, List<BS_ORDER_DETAIL> detailList)
         {
-            using (var session = DBHelper.GetSession())
+            using (var session = dbHelper.GetSession())
             {
                 try
                 {
@@ -62,7 +67,7 @@ namespace DAL
         /// </summary>
         public async Task<string> InsertAsync(BS_ORDER order, List<BS_ORDER_DETAIL> detailList)
         {
-            using (var session = await DBHelper.GetSessionAsync())
+            using (var session = await dbHelper.GetSessionAsync())
             {
                 try
                 {
@@ -104,7 +109,7 @@ namespace DAL
         /// </summary>
         public string Update(BS_ORDER order, List<BS_ORDER_DETAIL> detailList)
         {
-            using (var session = DBHelper.GetSession())
+            using (var session = dbHelper.GetSession())
             {
                 try
                 {
@@ -163,7 +168,7 @@ namespace DAL
         /// </summary>
         public async Task<string> UpdateAsync(BS_ORDER order, List<BS_ORDER_DETAIL> detailList)
         {
-            using (var session = await DBHelper.GetSessionAsync())
+            using (var session = await dbHelper.GetSessionAsync())
             {
                 try
                 {
@@ -222,7 +227,7 @@ namespace DAL
         /// </summary>
         public BS_ORDER Get(string id)
         {
-            using (var session = DBHelper.GetSession())
+            using (var session = dbHelper.GetSession())
             {
                 List<BS_ORDER_DETAIL> detailList = ServiceHelper.Get<BsOrderDetailDal>().GetListByOrderId(id);
 
@@ -240,9 +245,9 @@ namespace DAL
         /// </summary>
         public List<BS_ORDER> GetList(int? status, string remark, DateTime? startTime, DateTime? endTime)
         {
-            using (var session = DBHelper.GetSession())
+            using (var session = dbHelper.GetSession())
             {
-                SqlString sql = new SqlString(@"
+                SqlString sql = new SqlString(session.Provider, @"
                     select t.*, u.real_name as OrderUserRealName
                     from bs_order t
                     left join sys_user u on t.order_userid=u.id
@@ -282,9 +287,9 @@ namespace DAL
         /// </summary>
         public async Task<List<BS_ORDER>> GetListAsync(int? status, string remark, DateTime? startTime, DateTime? endTime)
         {
-            using (var session = await DBHelper.GetSessionAsync())
+            using (var session = await dbHelper.GetSessionAsync())
             {
-                SqlString sql = new SqlString(@"
+                SqlString sql = new SqlString(session.Provider, @"
                     select t.*, u.real_name as OrderUserRealName
                     from bs_order t
                     left join sys_user u on t.order_userid=u.id
@@ -324,9 +329,9 @@ namespace DAL
         /// </summary>
         public List<BS_ORDER> GetListPage(ref PagerModel pager, int? status, string remark, DateTime? startTime, DateTime? endTime)
         {
-            using (var session = DBHelper.GetSession())
+            using (var session = dbHelper.GetSession())
             {
-                SqlString sql = new SqlString(@"
+                SqlString sql = new SqlString(session.Provider, @"
                     select t.*, u.real_name as OrderUserRealName
                     from bs_order t
                     left join sys_user u on t.order_userid=u.id
@@ -365,9 +370,9 @@ namespace DAL
         /// </summary>
         public async Task<PagerModel> GetListPageAsync(PagerModel pager, int? status, string remark, DateTime? startTime, DateTime? endTime)
         {
-            using (var session = await DBHelper.GetSessionAsync())
+            using (var session = await dbHelper.GetSessionAsync())
             {
-                SqlString sql = new SqlString(@"
+                SqlString sql = new SqlString(session.Provider, @"
                     select t.*, u.real_name as OrderUserRealName
                     from bs_order t
                     left join sys_user u on t.order_userid=u.id

@@ -5,6 +5,7 @@ using DAL;
 using System.Collections.Generic;
 using DBUtil;
 using Utils;
+using System.Configuration;
 
 namespace DBHelperTest
 {
@@ -12,6 +13,7 @@ namespace DBHelperTest
     public class DeleteTest
     {
         #region 变量
+        private IDBHelper dbHelper = ServiceHelper.Get<IDBHelper>(() => new DBHelper(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString(), DBType.MySQL));
         private BsOrderDal m_BsOrderDal = ServiceHelper.Get<BsOrderDal>();
         private SysUserDal m_SysUserDal = ServiceHelper.Get<SysUserDal>();
         #endregion
@@ -28,7 +30,7 @@ namespace DBHelperTest
         [TestMethod]
         public void TestDeleteUserByCondition()
         {
-            using (var session = DBHelper.GetSession())
+            using (var session = dbHelper.GetSession())
             {
                 session.DeleteByCondition<SYS_USER>(string.Format("id>=12"));
             }

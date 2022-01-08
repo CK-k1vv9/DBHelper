@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Utils;
+using System.Configuration;
 
 namespace DAL
 {
@@ -15,13 +16,17 @@ namespace DAL
     /// </summary>
     public class SysUserDal
     {
+        #region 变量
+        private IDBHelper dbHelper = ServiceHelper.Get<IDBHelper>(() => new DBHelper(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString(), DBType.MySQL));
+        #endregion
+
         #region 根据ID查询单个记录
         /// <summary>
         /// 根据ID查询单个记录
         /// </summary>
         public SYS_USER Get(string id)
         {
-            using (var session = DBHelper.GetSession())
+            using (var session = dbHelper.GetSession())
             {
                 return session.FindById<SYS_USER>(id);
             }
@@ -34,7 +39,7 @@ namespace DAL
         /// </summary>
         public void Insert(SYS_USER info)
         {
-            using (var session = DBHelper.GetSession())
+            using (var session = dbHelper.GetSession())
             {
                 info.CREATE_TIME = DateTime.Now;
                 session.Insert(info);
@@ -48,7 +53,7 @@ namespace DAL
         /// </summary>
         public async Task InsertAsync(SYS_USER info)
         {
-            using (var session = await DBHelper.GetSessionAsync())
+            using (var session = await dbHelper.GetSessionAsync())
             {
                 info.CREATE_TIME = DateTime.Now;
                 await session.InsertAsync(info);
@@ -62,7 +67,7 @@ namespace DAL
         /// </summary>
         public void Update(SYS_USER info)
         {
-            using (var session = DBHelper.GetSession())
+            using (var session = dbHelper.GetSession())
             {
                 info.UPDATE_TIME = DateTime.Now;
                 session.Update(info);
@@ -76,7 +81,7 @@ namespace DAL
         /// </summary>
         public async Task UpdateAsync(SYS_USER info)
         {
-            using (var session = await DBHelper.GetSessionAsync())
+            using (var session = await dbHelper.GetSessionAsync())
             {
                 info.UPDATE_TIME = DateTime.Now;
                 var task = session.UpdateAsync(info);
@@ -91,7 +96,7 @@ namespace DAL
         /// </summary>
         public void Delete(string id)
         {
-            using (var session = DBHelper.GetSession())
+            using (var session = dbHelper.GetSession())
             {
                 session.DeleteById<SYS_USER>(id);
             }

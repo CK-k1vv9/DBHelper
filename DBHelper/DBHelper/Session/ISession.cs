@@ -10,6 +10,13 @@ namespace DBUtil
 {
     public interface ISession : IDisposable
     {
+        #region 属性
+        /// <summary>
+        /// 数据库 Provider
+        /// </summary>
+        IProvider Provider { get; }
+        #endregion
+
         #region 基础方法
 
         #region 执行简单SQL语句

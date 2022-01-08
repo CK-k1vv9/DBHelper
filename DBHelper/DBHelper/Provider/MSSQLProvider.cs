@@ -1,7 +1,7 @@
-﻿using MySql.Data.MySqlClient;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,28 +9,28 @@ using System.Threading.Tasks;
 namespace DBUtil
 {
     /// <summary>
-    /// MySQL 数据库实现
+    /// MSSQL 数据库实现
     /// </summary>
-    public class MySQLProvider : IProvider
+    public class MSSQLProvider : IProvider
     {
         #region 创建 DbConnection
         public DbConnection CreateConnection(string connectionString)
         {
-            return new MySqlConnection(connectionString);
+            return new SqlConnection(connectionString);
         }
         #endregion
 
         #region 生成 DbCommand
         public DbCommand GetCommand()
         {
-            return new MySqlCommand();
+            return new SqlCommand();
         }
         #endregion
 
         #region 生成 DbCommand
         public DbCommand GetCommand(string sql, DbConnection conn)
         {
-            DbCommand command = new MySqlCommand(sql);
+            DbCommand command = new SqlCommand(sql);
             command.Connection = conn;
             return command;
         }
@@ -39,14 +39,14 @@ namespace DBUtil
         #region 生成 DbParameter
         public DbParameter GetDbParameter(string name, object vallue)
         {
-            return new MySqlParameter(name, vallue);
+            return new SqlParameter(name, vallue);
         }
         #endregion
 
         #region 生成 DbDataAdapter
         public DbDataAdapter GetDataAdapter(DbCommand cmd)
         {
-            DbDataAdapter dataAdapter = new MySqlDataAdapter();
+            DbDataAdapter dataAdapter = new SqlDataAdapter();
             dataAdapter.SelectCommand = cmd;
             return dataAdapter;
         }
@@ -74,16 +74,13 @@ namespace DBUtil
             int endRow = 0;
 
             #region 分页查询语句
-            startRow = pageSize * (currentPage - 1);
+            startRow = pageSize * (currentPage - 1) + 1;
+            endRow = startRow + pageSize - 1;
 
-            sb.Append("select * from (");
-            sb.Append(sql);
-            if (!string.IsNullOrWhiteSpace(orderby))
-            {
-                sb.Append(" ");
-                sb.Append(orderby);
-            }
-            sb.AppendFormat(" ) row_limit limit {0},{1}", startRow, pageSize);
+            sb.Append(string.Format(@"
+                select * from 
+                (select ROW_NUMBER() over({1}) as rowNumber, t.* from ({0}) t) tempTable
+                where rowNumber between {2} and {3} ", sql, orderby, startRow, endRow));
             #endregion
 
             return sb.ToString();

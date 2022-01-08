@@ -1,7 +1,7 @@
-﻿using MySql.Data.MySqlClient;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Data.OleDb;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,28 +9,28 @@ using System.Threading.Tasks;
 namespace DBUtil
 {
     /// <summary>
-    /// MySQL 数据库实现
+    /// Access 数据库实现
     /// </summary>
-    public class MySQLProvider : IProvider
+    public class AccessProvider : IProvider
     {
         #region 创建 DbConnection
         public DbConnection CreateConnection(string connectionString)
         {
-            return new MySqlConnection(connectionString);
+            return new OleDbConnection(connectionString);
         }
         #endregion
 
         #region 生成 DbCommand
         public DbCommand GetCommand()
         {
-            return new MySqlCommand();
+            return new OleDbCommand();
         }
         #endregion
 
         #region 生成 DbCommand
         public DbCommand GetCommand(string sql, DbConnection conn)
         {
-            DbCommand command = new MySqlCommand(sql);
+            DbCommand command = new OleDbCommand(sql);
             command.Connection = conn;
             return command;
         }
@@ -39,14 +39,14 @@ namespace DBUtil
         #region 生成 DbParameter
         public DbParameter GetDbParameter(string name, object vallue)
         {
-            return new MySqlParameter(name, vallue);
+            return new OleDbParameter(name, vallue);
         }
         #endregion
 
         #region 生成 DbDataAdapter
         public DbDataAdapter GetDataAdapter(DbCommand cmd)
         {
-            DbDataAdapter dataAdapter = new MySqlDataAdapter();
+            DbDataAdapter dataAdapter = new OleDbDataAdapter();
             dataAdapter.SelectCommand = cmd;
             return dataAdapter;
         }
@@ -74,16 +74,16 @@ namespace DBUtil
             int endRow = 0;
 
             #region 分页查询语句
-            startRow = pageSize * (currentPage - 1);
+            endRow = pageSize * currentPage;
+            startRow = pageSize * currentPage > totalRows ? totalRows - pageSize * (currentPage - 1) : pageSize;
+            string[] orderbyArr = string.Format("{0} asc", orderby.Trim()).Split(' ');
 
-            sb.Append("select * from (");
-            sb.Append(sql);
-            if (!string.IsNullOrWhiteSpace(orderby))
-            {
-                sb.Append(" ");
-                sb.Append(orderby);
-            }
-            sb.AppendFormat(" ) row_limit limit {0},{1}", startRow, pageSize);
+            sb.AppendFormat(@"
+                select * from(
+                select top {4} * from 
+                (select top {3} * from ({0}) order by {1} asc)
+                order by {1} desc
+                ) order by {1} {2}", sql, orderbyArr[0], orderbyArr[1], endRow, startRow);
             #endregion
 
             return sb.ToString();

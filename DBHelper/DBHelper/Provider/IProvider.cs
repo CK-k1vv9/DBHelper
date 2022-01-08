@@ -10,7 +10,7 @@ namespace DBUtil
     /// <summary>
     /// 数据库实现接口
     /// </summary>
-    interface IProvider
+    public interface IProvider
     {
         /// <summary>
         /// 创建 DbConnection
@@ -23,9 +23,19 @@ namespace DBUtil
         DbCommand GetCommand();
 
         /// <summary>
+        /// 生成 DbCommand
+        /// </summary>
+        DbCommand GetCommand(string sql, DbConnection conn);
+
+        /// <summary>
         /// 生成 DbParameter
         /// </summary>
         DbParameter GetDbParameter(string name, object vallue);
+
+        /// <summary>
+        /// 生成 DbDataAdapter
+        /// </summary>
+        DbDataAdapter GetDataAdapter(DbCommand cmd);
 
         /// <summary>
         /// 带参数的SQL插入和修改语句中，参数前面的符号

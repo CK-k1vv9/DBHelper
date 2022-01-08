@@ -3,6 +3,7 @@ using Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -15,6 +16,8 @@ namespace DBHelperTestWinform
 {
     public partial class TestOracleFrom : Form
     {
+        private IDBHelper dbHelper = ServiceHelper.Get<IDBHelper>(() => new DBHelper(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString(), DBType.Oracle));
+
         public TestOracleFrom()
         {
             InitializeComponent();
@@ -29,7 +32,7 @@ namespace DBHelperTestWinform
         {
             this.BeginInvoke(new Action(() =>
             {
-                textBox1.AppendText(msg + "\r\n");
+                textBox1.AppendText(DateTime.Now.ToString("HH:mm:ss.fff") + " " + msg + "\r\n");
             }));
         }
 
@@ -42,7 +45,7 @@ namespace DBHelperTestWinform
                 {
                     List<CARINFO_MERGE> list = CacheUtil.TryGetValue<List<CARINFO_MERGE>>("CARINFO_MERGE", () =>
                     {
-                        using (var session = DBHelper.GetSession())
+                        using (var session = dbHelper.GetSession())
                         {
                             string sql = "select * from CARINFO_MERGE where rownum<20000";
                             LogTimeUtil logTime = new LogTimeUtil();
@@ -67,7 +70,7 @@ namespace DBHelperTestWinform
                 Log("开始");
                 try
                 {
-                    using (var session = DBHelper.GetSession())
+                    using (var session = dbHelper.GetSession())
                     {
                         string sql = "select * from CARINFO_MERGE where rownum<20000";
                         LogTimeUtil logTime = new LogTimeUtil();

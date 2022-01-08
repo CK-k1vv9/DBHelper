@@ -12,5 +12,21 @@ namespace DBUtil
     [Serializable, AttributeUsage(AttributeTargets.Property | AttributeTargets.Class)]
     public class AutoIncrementAttribute : Attribute
     {
+        private bool _value = true;
+
+        /// <summary>
+        /// true:自增 false:不自增
+        /// </summary>
+        public bool Value
+        {
+            get
+            {
+                return _value;
+            }
+            set
+            {
+                _value = value;
+            }
+        }
     }
 }
