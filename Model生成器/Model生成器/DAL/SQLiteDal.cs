@@ -6,8 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DBUtil;
+using ModelGenerator.Models;
 
-namespace DAL
+namespace ModelGenerator.DAL
 {
     /// <summary>
     /// SQLite数据库DAL
@@ -18,18 +19,20 @@ namespace DAL
         /// <summary>
         /// 获取数据库名
         /// </summary>
-        public List<Dictionary<string, string>> GetAllTables()
+        public List<DBTable> GetAllTables()
         {
             SQLiteHelper sqliteHelper = new SQLiteHelper();
             DataTable dt = sqliteHelper.Query("select tbl_name from sqlite_master where type='table'");
-            List<Dictionary<string, string>> result = new List<Dictionary<string, string>>();
+
+            List<DBTable> result = new List<DBTable>();
             foreach (DataRow dr in dt.Rows)
             {
-                Dictionary<string, string> dic = new Dictionary<string, string>();
-                dic.Add("table_name", dr["tbl_name"].ToString());
-                dic.Add("comments", "");
-                result.Add(dic);
+                DBTable dbTable = new DBTable();
+                dbTable.TableName = dr["tbl_name"].ToString();
+                dbTable.Comments = string.Empty;
+                result.Add(dbTable);
             }
+
             return result;
         }
         #endregion
@@ -38,31 +41,32 @@ namespace DAL
         /// <summary>
         /// 获取表的所有字段名及字段类型
         /// </summary>
-        public List<Dictionary<string, string>> GetAllColumns(string tableName)
+        public List<DBColumn> GetAllColumns(string tableName)
         {
             SQLiteHelper sqliteHelper = new SQLiteHelper();
             DataTable dt = sqliteHelper.Query("PRAGMA table_info('" + tableName + "')");
-            List<Dictionary<string, string>> result = new List<Dictionary<string, string>>();
+
+            List<DBColumn> result = new List<DBColumn>();
             foreach (DataRow dr in dt.Rows)
             {
-                Dictionary<string, string> dic = new Dictionary<string, string>();
-                dic.Add("columns_name", dr["name"].ToString());
-                dic.Add("notnull", dr["notnull"].ToString() == "1" ? "1" : "0");
-                dic.Add("comments", "");
-                dic.Add("data_type", "string");
-                dic.Add("data_scale", "");
-                dic.Add("data_precision", "");
-
+                DBColumn column = new DBColumn();
+                column.ColumnName = dr["name"].ToString();
+                column.NotNull = dr["notnull"].ToString() == "1" ? true : false;
+                column.Comments = string.Empty;
+                column.DataType = "string";
+                column.DataScale = string.Empty;
+                column.DataPrecision = string.Empty;
                 if (dr["pk"].ToString() == "1")
                 {
-                    dic.Add("constraint_type", "P");
+                    column.PrimaryKey = true;
                 }
                 else
                 {
-                    dic.Add("constraint_type", "");
+                    column.PrimaryKey = false;
                 }
-                result.Add(dic);
+                result.Add(column);
             }
+
             return result;
         }
         #endregion
@@ -71,7 +75,7 @@ namespace DAL
         /// <summary>
         /// 类型转换
         /// </summary>
-        public string ConvertDataType(Dictionary<string, string> column)
+        public string ConvertDataType(DBColumn column)
         {
             return "string";
         }

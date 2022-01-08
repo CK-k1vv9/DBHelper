@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Model生成器.DAL;
+using ModelGenerator.DAL;
 
-namespace DAL
+namespace ModelGenerator.DAL
 {
     /// <summary>
     /// 数据库操作工厂类

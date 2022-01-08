@@ -6,8 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DBUtil;
+using ModelGenerator.Models;
 
-namespace DAL
+namespace ModelGenerator.DAL
 {
     /// <summary>
     /// Oracle数据库DAL
@@ -18,21 +19,23 @@ namespace DAL
         /// <summary>
         /// 获取所有表信息
         /// </summary>
-        public List<Dictionary<string, string>> GetAllTables()
+        public List<DBTable> GetAllTables()
         {
             OracleHelper dbHelper = new OracleHelper();
             DataTable dt = dbHelper.Query(@"
                 select a.TABLE_NAME,b.COMMENTS 
                 from user_tables a,user_tab_comments b 
                 WHERE a.TABLE_NAME=b.TABLE_NAME");
-            List<Dictionary<string, string>> result = new List<Dictionary<string, string>>();
+
+            List<DBTable> result = new List<DBTable>();
             foreach (DataRow dr in dt.Rows)
             {
-                Dictionary<string, string> dic = new Dictionary<string, string>();
-                dic.Add("table_name", dr["TABLE_NAME"].ToString());
-                dic.Add("comments", dr["COMMENTS"].ToString());
-                result.Add(dic);
+                DBTable dbTable = new DBTable();
+                dbTable.TableName = dr["TABLE_NAME"].ToString();
+                dbTable.Comments = dr["COMMENTS"].ToString();
+                result.Add(dbTable);
             }
+
             return result;
         }
         #endregion
@@ -41,7 +44,7 @@ namespace DAL
         /// <summary>
         /// 获取表的所有字段名及字段类型
         /// </summary>
-        public List<Dictionary<string, string>> GetAllColumns(string tableName)
+        public List<DBColumn> GetAllColumns(string tableName)
         {
             string connectionString = ConfigurationManager.ConnectionStrings["OracleConnection"].ToString();
             int start = connectionString.IndexOf("User Id=") + 8;
@@ -54,16 +57,17 @@ namespace DAL
                 where a.TABLE_NAME=b.TABLE_NAME and a.COLUMN_NAME=b.COLUMN_NAME 
                 and a.TABLE_NAME='{0}'
                 order by column_id", tableName));
-            List<Dictionary<string, string>> result = new List<Dictionary<string, string>>();
+
+            List<DBColumn> result = new List<DBColumn>();
             foreach (DataRow dr in dt.Rows)
             {
-                Dictionary<string, string> dic = new Dictionary<string, string>();
-                dic.Add("columns_name", dr["COLUMN_NAME"].ToString());
-                dic.Add("notnull", dr["NULLABLE"].ToString() == "N" ? "1" : "0");
-                dic.Add("comments", dr["COMMENTS"].ToString());
-                dic.Add("data_type", dr["DATA_TYPE"].ToString());
-                dic.Add("data_scale", dr["DATA_SCALE"].ToString());
-                dic.Add("data_precision", dr["DATA_PRECISION"].ToString());
+                DBColumn column = new DBColumn();
+                column.ColumnName = dr["COLUMN_NAME"].ToString();
+                column.NotNull = dr["NULLABLE"].ToString() == "N" ? true : false;
+                column.Comments = dr["COMMENTS"].ToString();
+                column.DataType = dr["DATA_TYPE"].ToString();
+                column.DataScale = dr["DATA_SCALE"].ToString();
+                column.DataPrecision = dr["DATA_PRECISION"].ToString();
 
                 DataTable dt2 = dbHelper.Query(string.Format(@"
                     select *
@@ -76,16 +80,14 @@ namespace DAL
                     {
                         if (dr2["CONSTRAINT_TYPE"].ToString() == "P")
                         {
-                            dic.Add("constraint_type", dr2["CONSTRAINT_TYPE"].ToString());
+                            column.PrimaryKey = true;
+                            break;
                         }
                     }
                 }
-                if (!dic.ContainsKey("constraint_type"))
-                {
-                    dic.Add("constraint_type", "");
-                }
-                result.Add(dic);
+                result.Add(column);
             }
+
             return result;
         }
         #endregion
@@ -94,17 +96,17 @@ namespace DAL
         /// <summary>
         /// 类型转换
         /// </summary>
-        public string ConvertDataType(Dictionary<string, string> column)
+        public string ConvertDataType(DBColumn column)
         {
             string data_type = "string";
-            switch (column["data_type"])
+            switch (column.DataType)
             {
                 case "NUMBER":
-                    if (column["data_scale"].Trim() == "0")
+                    if (column.DataScale.Trim() == "0")
                     {
-                        if (column["data_precision"].Trim() != "" && int.Parse(column["data_precision"].Trim()) > 9)
+                        if (column.DataScale.Trim() != "" && int.Parse(column.DataScale.Trim()) > 9)
                         {
-                            if (column["notnull"] == "1")
+                            if (column.NotNull)
                             {
                                 data_type = "long";
                             }
@@ -115,7 +117,7 @@ namespace DAL
                         }
                         else
                         {
-                            if (column["notnull"] == "1")
+                            if (column.NotNull)
                             {
                                 data_type = "int";
                             }
@@ -127,7 +129,7 @@ namespace DAL
                     }
                     else
                     {
-                        if (column["notnull"] == "1")
+                        if (column.NotNull)
                         {
                             data_type = "decimal";
                         }
@@ -138,7 +140,7 @@ namespace DAL
                     }
                     break;
                 case "LONG":
-                    if (column["notnull"] == "1")
+                    if (column.NotNull)
                     {
                         data_type = "long";
                     }
@@ -157,7 +159,7 @@ namespace DAL
                     data_type = "string";
                     break;
                 case "DATE":
-                    if (column["notnull"] == "1")
+                    if (column.NotNull)
                     {
                         data_type = "DateTime";
                     }
@@ -179,7 +181,7 @@ namespace DAL
                 case "TIMESTAMP(5)":
                 case "TIMESTAMP(6)":
                 case "TIMESTAMP(7)":
-                    if (column["notnull"] == "1")
+                    if (column.NotNull)
                     {
                         data_type = "DateTime";
                     }
@@ -189,7 +191,7 @@ namespace DAL
                     }
                     break;
                 default:
-                    throw new Exception("Model生成器未实现数据库字段类型" + column["data_type"] + "的转换");
+                    throw new Exception("Model生成器未实现数据库字段类型" + column.DataType + "的转换");
             }
             return data_type;
         }

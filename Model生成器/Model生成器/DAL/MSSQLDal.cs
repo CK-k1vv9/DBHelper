@@ -4,10 +4,10 @@ using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Text;
-using DAL;
-using Model生成器.DBUtil;
+using ModelGenerator.DBUtil;
+using ModelGenerator.Models;
 
-namespace Model生成器.DAL
+namespace ModelGenerator.DAL
 {
     /// <summary>
     /// MSSQL数据库DAL
@@ -18,7 +18,7 @@ namespace Model生成器.DAL
         /// <summary>
         /// 获取所有表信息
         /// </summary>
-        public List<Dictionary<string, string>> GetAllTables()
+        public List<DBTable> GetAllTables()
         {
             string connectionString = ConfigurationManager.ConnectionStrings["MSSQLConnection"].ToString();
             MSSQLHelper dbHelper = new MSSQLHelper();
@@ -27,14 +27,16 @@ namespace Model生成器.DAL
                 FROM sys.tables tbs
                 left join sys.extended_properties ds on ds.major_id=tbs.object_id 
                 Where ds.minor_id=0"));
-            List<Dictionary<string, string>> result = new List<Dictionary<string, string>>();
+
+            List<DBTable> result = new List<DBTable>();
             foreach (DataRow dr in dt.Rows)
             {
-                Dictionary<string, string> dic = new Dictionary<string, string>();
-                dic.Add("table_name", dr["TABLE_NAME"].ToString());
-                dic.Add("comments", dr["COMMENTS"].ToString());
-                result.Add(dic);
+                DBTable dbTable = new DBTable();
+                dbTable.TableName = dr["TABLE_NAME"].ToString();
+                dbTable.Comments = dr["COMMENTS"].ToString();
+                result.Add(dbTable);
             }
+
             return result;
         }
         #endregion
@@ -43,7 +45,7 @@ namespace Model生成器.DAL
         /// <summary>
         /// 获取表的所有字段名及字段类型
         /// </summary>
-        public List<Dictionary<string, string>> GetAllColumns(string tableName)
+        public List<DBColumn> GetAllColumns(string tableName)
         {
             string connectionString = ConfigurationManager.ConnectionStrings["MySqlConnection"].ToString();
             MSSQLHelper dbHelper = new MSSQLHelper();
@@ -67,28 +69,29 @@ namespace Model生成器.DAL
             {
                 strPK = dtPK.Rows[0]["column_name"].ToString();
             }
-            List<Dictionary<string, string>> result = new List<Dictionary<string, string>>();
+
+            List<DBColumn> result = new List<DBColumn>();
             foreach (DataRow dr in dt.Rows)
             {
-                Dictionary<string, string> dic = new Dictionary<string, string>();
-                dic.Add("columns_name", dr["name"].ToString());
-                dic.Add("notnull", dr["is_nullable"].ToString() == "False" ? "1" : "0");
-                dic.Add("comments", dr["value"].ToString());
+                DBColumn column = new DBColumn();
+                column.ColumnName = dr["name"].ToString();
+                column.NotNull = dr["is_nullable"].ToString() == "False" ? true : false;
+                column.Comments = dr["value"].ToString();
                 string dataType = dr["column_type"].ToString();
-                dic.Add("data_type", dataType);
-                dic.Add("data_scale", dr["scale"].ToString());
-                dic.Add("data_precision", dr["precision"].ToString());
-
+                column.DataType = dataType;
+                column.DataScale = dr["scale"].ToString();
+                column.DataPrecision = dr["precision"].ToString();
                 if (dr["name"].ToString() == strPK)
                 {
-                    dic.Add("constraint_type", "P");
+                    column.PrimaryKey = true;
                 }
                 else
                 {
-                    dic.Add("constraint_type", "");
+                    column.PrimaryKey = false;
                 }
-                result.Add(dic);
+                result.Add(column);
             }
+
             return result;
         }
         #endregion
@@ -97,13 +100,13 @@ namespace Model生成器.DAL
         /// <summary>
         /// 类型转换
         /// </summary>
-        public string ConvertDataType(Dictionary<string, string> column)
+        public string ConvertDataType(DBColumn column)
         {
             string data_type = "string";
-            switch (column["data_type"])
+            switch (column.DataType)
             {
                 case "int":
-                    if (column["notnull"] == "1")
+                    if (column.NotNull)
                     {
                         data_type = "int";
                     }
@@ -113,7 +116,7 @@ namespace Model生成器.DAL
                     }
                     break;
                 case "bigint":
-                    if (column["notnull"] == "1")
+                    if (column.NotNull)
                     {
                         data_type = "long";
                     }
@@ -123,7 +126,7 @@ namespace Model生成器.DAL
                     }
                     break;
                 case "decimal":
-                    if (column["notnull"] == "1")
+                    if (column.NotNull)
                     {
                         data_type = "decimal";
                     }
@@ -145,7 +148,7 @@ namespace Model生成器.DAL
                     data_type = "string";
                     break;
                 case "datetime":
-                    if (column["notnull"] == "1")
+                    if (column.NotNull)
                     {
                         data_type = "DateTime";
                     }
@@ -155,7 +158,7 @@ namespace Model生成器.DAL
                     }
                     break;
                 default:
-                    throw new Exception("Model生成器未实现数据库字段类型" + column["data_type"] + "的转换");
+                    throw new Exception("Model生成器未实现数据库字段类型" + column.DataType + "的转换");
             }
             return data_type;
         }

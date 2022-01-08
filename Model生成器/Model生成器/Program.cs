@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Model生成器
+namespace ModelGenerator
 {
     static class Program
     {

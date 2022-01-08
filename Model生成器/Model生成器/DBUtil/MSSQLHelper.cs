@@ -6,7 +6,7 @@ using System.Text;
 using System.Data.SqlClient;
 using System.Data;
 
-namespace Model生成器.DBUtil
+namespace ModelGenerator.DBUtil
 {
     /// <summary>
     /// 操作类
