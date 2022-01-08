@@ -21,7 +21,7 @@ namespace DBUtil
     /// <summary>
     /// 数据库操作类
     /// </summary>
-    public class DBHelper : IDBHelper
+    public class SessionHelper : ISessionHelper
     {
         #region 变量
         /// <summary>
@@ -47,7 +47,7 @@ namespace DBUtil
         /// <param name="connectionString">数据库连接字符串</param>
         /// <param name="dbType">数据库类型</param>
         /// <param name="autoIncrement">主键自增全局配置(如果实体类或实体类的主键添加了AutoIncrementAttribute特性则不使用全局配置)</param>
-        public DBHelper(string connectionString, DBType dbType, bool autoIncrement = false)
+        public SessionHelper(string connectionString, DBType dbType, bool autoIncrement = false)
         {
             _connectionString = connectionString;
             _dbType = dbType;

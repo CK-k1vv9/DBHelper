@@ -15,10 +15,6 @@ namespace DAL
     /// </summary>
     public class BsOrderDetailDal
     {
-        #region 变量
-        private IDBHelper dbHelper = ServiceHelper.Get<IDBHelper>(() => new DBHelper(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString(), DBType.MySQL));
-        #endregion
-
         #region 根据订单ID查询订单明细集合
         /// <summary>
         /// 根据订单ID查询订单明细集合
@@ -27,7 +23,7 @@ namespace DAL
         {
             BsOrderDal m_BsOrderDetailDal = ServiceHelper.Get<BsOrderDal>(); //该行代码用于测试DAL相互引用，运行不报错即为通过测试
 
-            using (var session = dbHelper.GetSession())
+            using (var session = DBHelper.GetSession())
             {
                 SqlString sql = new SqlString(session.Provider, "select * from bs_order_detail where order_id=@orderId order by order_num", orderId);
 

@@ -9,7 +9,7 @@ namespace DBUtil
     /// <summary>
     /// DBHelper 接口
     /// </summary>
-    public interface IDBHelper
+    public interface ISessionHelper
     {
         /// <summary>
         /// 获取 ISession

@@ -13,7 +13,7 @@ namespace DBHelperTest
     public class DeleteTest
     {
         #region 变量
-        private IDBHelper dbHelper = ServiceHelper.Get<IDBHelper>(() => new DBHelper(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString(), DBType.MySQL));
+        private ISessionHelper dbHelper = ServiceHelper.Get<ISessionHelper>(() => new SessionHelper(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString(), DBType.MySQL));
         private BsOrderDal m_BsOrderDal = ServiceHelper.Get<BsOrderDal>();
         private SysUserDal m_SysUserDal = ServiceHelper.Get<SysUserDal>();
         #endregion
