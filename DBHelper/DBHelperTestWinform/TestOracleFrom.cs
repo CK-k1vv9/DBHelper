@@ -16,7 +16,8 @@ namespace DBHelperTestWinform
 {
     public partial class TestOracleFrom : Form
     {
-        private IDBHelper dbHelper = ServiceHelper.Get<IDBHelper>(() => new DBHelper(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString(), DBType.Oracle));
+        private IDBHelper dbHelper = new DBHelper(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString(), DBType.Oracle);
+        private IDBHelper dbHelperMySQL = new DBHelper(ConfigurationManager.ConnectionStrings["MySQLConnection"].ToString(), DBType.MySQL);
 
         public TestOracleFrom()
         {
@@ -70,6 +71,11 @@ namespace DBHelperTestWinform
                 Log("开始");
                 try
                 {
+                    using (var session = dbHelperMySQL.GetSession())
+                    {
+                        BS_ORDER result = session.FindById<BS_ORDER>("991de30a46ad4599919b56d1a13d100c");
+                    }
+
                     using (var session = dbHelper.GetSession())
                     {
                         string sql = "select * from CARINFO_MERGE where rownum<20000";
