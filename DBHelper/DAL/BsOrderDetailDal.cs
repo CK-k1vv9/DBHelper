@@ -18,7 +18,7 @@ namespace DAL
         /// <summary>
         /// 根据订单ID查询订单明细集合
         /// </summary>
-        public List<BS_ORDER_DETAIL> GetListByOrderId(string orderId)
+        public List<BsOrderDetail> GetListByOrderId(string orderId)
         {
             BsOrderDal m_BsOrderDetailDal = ServiceHelper.Get<BsOrderDal>(); //该行代码用于测试DAL相互引用，运行不报错即为通过测试
 
@@ -26,7 +26,7 @@ namespace DAL
             {
                 SqlString sql = new SqlString(session.Provider, "select * from bs_order_detail where order_id=@orderId order by order_num", orderId);
 
-                return session.FindListBySql<BS_ORDER_DETAIL>(sql.SQL, sql.Params);
+                return session.FindListBySql<BsOrderDetail>(sql.SQL, sql.Params);
             }
         }
         #endregion

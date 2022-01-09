@@ -6,9 +6,10 @@ using DBUtil;
 namespace Models
 {
     /// <summary>
-    /// ¶©µ¥Ã÷Ï¸±í
+    /// ç”¨æˆ·è¡¨
     /// </summary>
-    public partial class BS_ORDER_DETAIL
+    [AutoIncrement]
+    public partial class SysUser
     {
 
     }

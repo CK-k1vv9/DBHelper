@@ -19,9 +19,9 @@ namespace DBHelperTest
         [TestMethod]
         public void TestQuery()
         {
-            List<BS_ORDER> list = m_BsOrderDal.GetList(0, null, DateTime.MinValue, DateTime.Now.AddDays(1));
+            List<BsOrder> list = m_BsOrderDal.GetList(0, null, DateTime.MinValue, DateTime.Now.AddDays(1));
 
-            foreach (BS_ORDER item in list)
+            foreach (BsOrder item in list)
             {
                 Console.WriteLine(ModelToStringUtil.ToString(item));
             }
@@ -35,9 +35,9 @@ namespace DBHelperTest
             PagerModel pagerModel = new PagerModel();
             pagerModel.CurrentPage = 1;
             pagerModel.PageSize = 10;
-            List<BS_ORDER> list = m_BsOrderDal.GetListPage(ref pagerModel, 0, null, DateTime.MinValue, DateTime.Now.AddDays(1));
+            List<BsOrder> list = m_BsOrderDal.GetListPage(ref pagerModel, 0, null, DateTime.MinValue, DateTime.Now.AddDays(1));
 
-            foreach (BS_ORDER item in list)
+            foreach (BsOrder item in list)
             {
                 Console.WriteLine(ModelToStringUtil.ToString(item));
             }

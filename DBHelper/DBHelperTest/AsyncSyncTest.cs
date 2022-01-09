@@ -50,7 +50,7 @@ namespace DBHelperTest
                         pagerModel.CurrentPage = 1;
                         pagerModel.PageSize = _pageSize;
                         var task = m_BsOrderDal.GetListPage(ref pagerModel, 0, null, DateTime.MinValue, DateTime.Now.AddDays(1));
-                        List<BS_ORDER> list = pagerModel.Result as List<BS_ORDER>;
+                        List<BsOrder> list = pagerModel.Result as List<BsOrder>;
                     }
                     catch (Exception ex)
                     {
@@ -75,7 +75,7 @@ namespace DBHelperTest
                     pagerModel.CurrentPage = 1;
                     pagerModel.PageSize = _pageSize;
                     var result = await m_BsOrderDal.GetListPageAsync(pagerModel, 0, null, DateTime.MinValue, DateTime.Now.AddDays(1));
-                    List<BS_ORDER> list = result.Result as List<BS_ORDER>;
+                    List<BsOrder> list = result.Result as List<BsOrder>;
                 }
                 catch (Exception ex)
                 {

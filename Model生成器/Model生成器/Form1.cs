@@ -80,6 +80,7 @@ namespace ModelGenerator
         {
             string key = e.KeyData.ToString();
             int index = 0;
+            if (e.Control || e.Shift) return;
 
             foreach (DataGridViewRow row in dataGridView1.Rows)
             {
@@ -171,8 +172,16 @@ namespace ModelGenerator
 
                         #region 原始Model
                         string tableComments = table.Comments ?? string.Empty;
-                        string strClass = strClassTemplate.Replace("#table_comments", tableComments.Replace("\r\n", "\r\n    /// ").Replace("\n", "\r\n        /// "));
+                        string strClass = strClassTemplate.Replace("#table_comments", tableComments.Trim().Replace("\r\n", "\r\n    /// ").Replace("\n", "\r\n        /// "));
                         strClass = strClass.Replace("#table_name", tableName);
+                        if (tableName.ToUpper() != table.TableName.Trim().ToUpper())
+                        {
+                            strClass = strClass.Replace("#table_atrribute", "[DBTable(\"" + table.TableName.Trim() + "\")]");
+                        }
+                        else
+                        {
+                            strClass = strClass.Replace("    #table_atrribute\r\n", string.Empty);
+                        }
 
                         foreach (DBColumn column in columnList) //遍历字段
                         {
@@ -181,13 +190,23 @@ namespace ModelGenerator
                             string columnComments = column.Comments ?? string.Empty;
                             string strField = strFieldTemplate.Replace("#field_comments", columnComments.Replace("\r\n", "\r\n        /// ").Replace("\n", "\r\n        /// "));
 
-                            if (column.PrimaryKey)
+                            if (!column.PrimaryKey)
                             {
                                 strField = strField.Replace("        [IsId]\r\n", string.Empty);
                             }
 
                             strField = strField.Replace("#data_type", data_type);
-                            strField = strField.Replace("#field_name", NameUtil.GetName(column.ColumnName, nameMode));
+                            string fieldName = NameUtil.GetName(column.ColumnName, nameMode);
+                            strField = strField.Replace("#field_name", fieldName);
+
+                            if (fieldName.ToUpper() == column.ColumnName.ToUpper())
+                            {
+                                strField = strField.Replace("#field_atrribute_value", "[IsDBField]");
+                            }
+                            else
+                            {
+                                strField = strField.Replace("#field_atrribute_value", "[IsDBField(\"" + column.ColumnName + "\")]");
+                            }
 
                             sbFields.Append(strField);
                         }
@@ -198,7 +217,7 @@ namespace ModelGenerator
                         #endregion
 
                         #region 扩展Model
-                        string strClassExt = strClassExtTemplate.Replace("#table_comments", tableComments.Replace("\r\n", "\r\n    ///"));
+                        string strClassExt = strClassExtTemplate.Replace("#table_comments", tableComments.Trim().Replace("\r\n", "\r\n    /// ").Replace("\n", "\r\n        /// "));
                         strClassExt = strClassExt.Replace("#table_name", tableName);
 
                         FileHelper.WriteFile(Application.StartupPath + "\\ExtModels", strClassExt.ToString(), tableName);

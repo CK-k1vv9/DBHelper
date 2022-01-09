@@ -9,7 +9,8 @@ namespace Models
     /// 订单表
     /// </summary>
     [Serializable]
-    public partial class BS_ORDER
+    [DBTable("bs_order")]
+    public partial class BsOrder
     {
 
         /// <summary>
@@ -17,61 +18,61 @@ namespace Models
         /// </summary>
         [IsId]
         [IsDBField]
-        public string ID { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// 订单时间
         /// </summary>
-        [IsDBField]
-        public DateTime ORDER_TIME { get; set; }
+        [IsDBField("order_time")]
+        public DateTime OrderTime { get; set; }
 
         /// <summary>
         /// 订单金额
         /// </summary>
         [IsDBField]
-        public decimal? AMOUNT { get; set; }
+        public decimal? Amount { get; set; }
 
         /// <summary>
         /// 下单用户
         /// </summary>
-        [IsDBField]
-        public long ORDER_USERID { get; set; }
+        [IsDBField("order_userid")]
+        public long OrderUserid { get; set; }
 
         /// <summary>
         /// 订单状态(0草稿 1已下单 2已付款 3已发货 4完成)
         /// </summary>
         [IsDBField]
-        public int STATUS { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
         [IsDBField]
-        public string REMARK { get; set; }
+        public string Remark { get; set; }
 
         /// <summary>
         /// 创建者ID
         /// </summary>
-        [IsDBField]
-        public string CREATE_USERID { get; set; }
+        [IsDBField("create_userid")]
+        public string CreateUserid { get; set; }
 
         /// <summary>
         /// 创建时间
         /// </summary>
-        [IsDBField]
-        public DateTime CREATE_TIME { get; set; }
+        [IsDBField("create_time")]
+        public DateTime CreateTime { get; set; }
 
         /// <summary>
         /// 更新者ID
         /// </summary>
-        [IsDBField]
-        public string UPDATE_USERID { get; set; }
+        [IsDBField("update_userid")]
+        public string UpdateUserid { get; set; }
 
         /// <summary>
         /// 更新时间
         /// </summary>
-        [IsDBField]
-        public DateTime? UPDATE_TIME { get; set; }
+        [IsDBField("update_time")]
+        public DateTime? UpdateTime { get; set; }
 
     }
 }

@@ -24,9 +24,9 @@ namespace DBHelperTest
         {
             string userId = "10";
 
-            BS_ORDER order = m_BsOrderDal.Get("991de30a46ad4599919b56d1a13d100c");
-            order.REMARK = "订单已修改";
-            order.UPDATE_USERID = userId;
+            BsOrder order = m_BsOrderDal.Get("991de30a46ad4599919b56d1a13d100c");
+            order.Remark = "订单已修改";
+            order.UpdateUserid = userId;
 
             order.DetailList.Clear(); //删除全部明细
 
@@ -39,27 +39,27 @@ namespace DBHelperTest
             //    }
             //}
 
-            foreach (BS_ORDER_DETAIL oldDetail in order.DetailList)
+            foreach (BsOrderDetail oldDetail in order.DetailList)
             {
-                oldDetail.UPDATE_USERID = userId;
+                oldDetail.UpdateUserid = userId;
             }
 
-            BS_ORDER_DETAIL detail = new BS_ORDER_DETAIL();
-            detail.GOODS_NAME = "桌子" + _rnd.Next(1, 100);
-            detail.QUANTITY = 10;
-            detail.PRICE = (decimal)78.89;
-            detail.SPEC = "张";
-            detail.CREATE_USERID = userId;
-            detail.ORDER_NUM = 4;
+            BsOrderDetail detail = new BsOrderDetail();
+            detail.GoodsName = "桌子" + _rnd.Next(1, 100);
+            detail.Quantity = 10;
+            detail.Price = (decimal)78.89;
+            detail.Spec = "张";
+            detail.CreateUserid = userId;
+            detail.OrderNum = 4;
             order.DetailList.Add(detail);
 
-            detail = new BS_ORDER_DETAIL();
-            detail.GOODS_NAME = "椅子" + _rnd.Next(1, 100);
-            detail.QUANTITY = 20;
-            detail.PRICE = (decimal)30.23;
-            detail.SPEC = "把";
-            detail.CREATE_USERID = userId;
-            detail.ORDER_NUM = 5;
+            detail = new BsOrderDetail();
+            detail.GoodsName = "椅子" + _rnd.Next(1, 100);
+            detail.Quantity = 20;
+            detail.Price = (decimal)30.23;
+            detail.Spec = "把";
+            detail.CreateUserid = userId;
+            detail.OrderNum = 5;
             order.DetailList.Add(detail);
 
             m_BsOrderDal.Update(order, order.DetailList);
@@ -71,13 +71,13 @@ namespace DBHelperTest
         public void TestUpdateUser()
         {
             string userId = "10";
-            SYS_USER user = m_SysUserDal.Get(userId);
+            SysUser user = m_SysUserDal.Get(userId);
             if (user != null)
             {
-                user.UPDATE_USERID = "1";
-                user.REMARK = "测试修改用户" + _rnd.Next(1, 100);
+                user.UpdateUserid = "1";
+                user.Remark = "测试修改用户" + _rnd.Next(1, 100);
                 m_SysUserDal.Update(user);
-                Console.WriteLine("用户 ID=" + user.ID + " 已修改");
+                Console.WriteLine("用户 ID=" + user.Id + " 已修改");
             }
             else
             {
@@ -91,13 +91,13 @@ namespace DBHelperTest
         public async Task TestUpdateUserAsync()
         {
             string userId = "10";
-            SYS_USER user = m_SysUserDal.Get(userId);
+            SysUser user = m_SysUserDal.Get(userId);
             if (user != null)
             {
-                user.UPDATE_USERID = "1";
-                user.REMARK = "测试修改用户" + _rnd.Next(1, 100);
+                user.UpdateUserid = "1";
+                user.Remark = "测试修改用户" + _rnd.Next(1, 100);
                 await m_SysUserDal.UpdateAsync(user);
-                Console.WriteLine("用户 ID=" + user.ID + " 已修改");
+                Console.WriteLine("用户 ID=" + user.Id + " 已修改");
             }
             else
             {

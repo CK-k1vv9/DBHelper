@@ -9,7 +9,8 @@ namespace Models
     /// 用户表
     /// </summary>
     [Serializable]
-    public partial class SYS_USER
+    [DBTable("sys_user")]
+    public partial class SysUser
     {
 
         /// <summary>
@@ -17,55 +18,55 @@ namespace Models
         /// </summary>
         [IsId]
         [IsDBField]
-        public long ID { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// 用户名
         /// </summary>
-        [IsDBField]
-        public string USER_NAME { get; set; }
+        [IsDBField("user_name")]
+        public string UserName { get; set; }
 
         /// <summary>
         /// 用户姓名
         /// </summary>
-        [IsDBField]
-        public string REAL_NAME { get; set; }
+        [IsDBField("real_name")]
+        public string RealName { get; set; }
 
         /// <summary>
         /// 用户密码
         /// </summary>
         [IsDBField]
-        public string PASSWORD { get; set; }
+        public string Password { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
         [IsDBField]
-        public string REMARK { get; set; }
+        public string Remark { get; set; }
 
         /// <summary>
         /// 创建者ID
         /// </summary>
-        [IsDBField]
-        public string CREATE_USERID { get; set; }
+        [IsDBField("create_userid")]
+        public string CreateUserid { get; set; }
 
         /// <summary>
         /// 创建时间
         /// </summary>
-        [IsDBField]
-        public DateTime CREATE_TIME { get; set; }
+        [IsDBField("create_time")]
+        public DateTime CreateTime { get; set; }
 
         /// <summary>
         /// 更新者ID
         /// </summary>
-        [IsDBField]
-        public string UPDATE_USERID { get; set; }
+        [IsDBField("update_userid")]
+        public string UpdateUserid { get; set; }
 
         /// <summary>
         /// 更新时间
         /// </summary>
-        [IsDBField]
-        public DateTime? UPDATE_TIME { get; set; }
+        [IsDBField("update_time")]
+        public DateTime? UpdateTime { get; set; }
 
     }
 }

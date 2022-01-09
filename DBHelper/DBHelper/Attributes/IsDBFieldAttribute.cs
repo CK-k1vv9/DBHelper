@@ -11,5 +11,15 @@ namespace DBUtil
     [Serializable, AttributeUsage(AttributeTargets.Property | AttributeTargets.Class)]
     public class IsDBFieldAttribute : Attribute
     {
+        public string FieldName { get; set; }
+
+        /// <summary>
+        /// 标识该属性是数据库字段
+        /// </summary>
+        /// <param name="tableName">数据库字段名</param>
+        public IsDBFieldAttribute(string fieldName = null)
+        {
+            FieldName = fieldName;
+        }
     }
 }

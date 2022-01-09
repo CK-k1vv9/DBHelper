@@ -505,16 +505,18 @@ namespace DBUtil
         private void PrepareInsertSql(object obj, bool autoIncrement, ref StringBuilder strSql, ref DbParameter[] parameters, ref int savedCount)
         {
             Type type = obj.GetType();
-            strSql.Append(string.Format("insert into {0}(", type.Name));
-            PropertyInfo[] propertyInfoList = GetEntityProperties(type);
+            strSql.Append(string.Format("insert into {0}(", GetTableName(type)));
+            PropertyInfoEx[] propertyInfoList = GetEntityProperties(type);
             List<string> propertyNameList = new List<string>();
-            foreach (PropertyInfo propertyInfo in propertyInfoList)
+            foreach (PropertyInfoEx propertyInfoEx in propertyInfoList)
             {
+                PropertyInfo propertyInfo = propertyInfoEx.PropertyInfo;
+
                 if (IsAutoIncrementPk(type, propertyInfo, autoIncrement)) continue;
 
                 if (propertyInfo.GetCustomAttributes(typeof(IsDBFieldAttribute), false).Length > 0)
                 {
-                    propertyNameList.Add(propertyInfo.Name);
+                    propertyNameList.Add(propertyInfoEx.FieldName);
                     savedCount++;
                 }
             }
@@ -525,13 +527,15 @@ namespace DBUtil
             int k = 0;
             for (int i = 0; i < propertyInfoList.Length && savedCount > 0; i++)
             {
-                PropertyInfo propertyInfo = propertyInfoList[i];
+                PropertyInfoEx propertyInfoEx = propertyInfoList[i];
+                PropertyInfo propertyInfo = propertyInfoEx.PropertyInfo;
+
                 if (IsAutoIncrementPk(type, propertyInfo, autoIncrement)) continue;
 
                 if (propertyInfo.GetCustomAttributes(typeof(IsDBFieldAttribute), false).Length > 0)
                 {
                     object val = propertyInfo.GetValue(obj, null);
-                    DbParameter param = _provider.GetDbParameter(_parameterMark + propertyInfo.Name, val == null ? DBNull.Value : val);
+                    DbParameter param = _provider.GetDbParameter(_parameterMark + propertyInfoEx.FieldName, val == null ? DBNull.Value : val);
                     parameters[k++] = param;
                 }
             }
@@ -589,19 +593,21 @@ namespace DBUtil
         private void PrepareUpdateSql(object obj, object oldObj, ref StringBuilder strSql, ref DbParameter[] parameters, ref int savedCount)
         {
             Type type = obj.GetType();
-            strSql.Append(string.Format("update {0} ", type.Name));
+            strSql.Append(string.Format("update {0} ", GetTableName(type)));
 
-            PropertyInfo[] propertyInfoList = GetEntityProperties(type);
+            PropertyInfoEx[] propertyInfoList = GetEntityProperties(type);
             List<string> propertyNameList = new List<string>();
-            foreach (PropertyInfo propertyInfo in propertyInfoList)
+            foreach (PropertyInfoEx propertyInfoEx in propertyInfoList)
             {
+                PropertyInfo propertyInfo = propertyInfoEx.PropertyInfo;
+
                 if (propertyInfo.GetCustomAttributes(typeof(IsDBFieldAttribute), false).Length > 0)
                 {
                     object oldVal = propertyInfo.GetValue(oldObj, null);
                     object val = propertyInfo.GetValue(obj, null);
                     if (!object.Equals(oldVal, val))
                     {
-                        propertyNameList.Add(propertyInfo.Name);
+                        propertyNameList.Add(propertyInfoEx.FieldName);
                         savedCount++;
                     }
                 }
@@ -613,15 +619,17 @@ namespace DBUtil
             int k = 0;
             for (int i = 0; i < propertyInfoList.Length && savedCount > 0; i++)
             {
-                PropertyInfo propertyInfo = propertyInfoList[i];
+                PropertyInfoEx propertyInfoEx = propertyInfoList[i];
+                PropertyInfo propertyInfo = propertyInfoEx.PropertyInfo;
+
                 if (propertyInfo.GetCustomAttributes(typeof(IsDBFieldAttribute), false).Length > 0)
                 {
                     object oldVal = propertyInfo.GetValue(oldObj, null);
                     object val = propertyInfo.GetValue(obj, null);
                     if (!object.Equals(oldVal, val))
                     {
-                        sbPros.Append(string.Format(" {0}={1}{0},", propertyInfo.Name, _parameterMark));
-                        DbParameter param = _provider.GetDbParameter(_parameterMark + propertyInfo.Name, val == null ? DBNull.Value : val);
+                        sbPros.Append(string.Format(" {0}={1}{0},", propertyInfoEx.FieldName, _parameterMark));
+                        DbParameter param = _provider.GetDbParameter(_parameterMark + propertyInfoEx.FieldName, val == null ? DBNull.Value : val);
                         parameters[k++] = param;
                     }
                 }
@@ -682,7 +690,7 @@ namespace DBUtil
             StringBuilder sbSql = new StringBuilder();
             DbParameter[] cmdParms = new DbParameter[1];
             cmdParms[0] = _provider.GetDbParameter(_parameterMark + GetIdName(type), id);
-            sbSql.Append(string.Format("delete from {0} where {2}={1}{2}", type.Name, _parameterMark, GetIdName(type)));
+            sbSql.Append(string.Format("delete from {0} where {2}={1}{2}", GetTableName(type), _parameterMark, GetIdName(type)));
 
             ExecuteSql(sbSql.ToString(), cmdParms);
         }
@@ -696,7 +704,7 @@ namespace DBUtil
             StringBuilder sbSql = new StringBuilder();
             DbParameter[] cmdParms = new DbParameter[1];
             cmdParms[0] = _provider.GetDbParameter(_parameterMark + GetIdName(type), id);
-            sbSql.Append(string.Format("delete from {0} where {2}={1}{2}", type.Name, _parameterMark, GetIdName(type)));
+            sbSql.Append(string.Format("delete from {0} where {2}={1}{2}", GetTableName(type), _parameterMark, GetIdName(type)));
 
             await ExecuteSqlAsync(sbSql.ToString(), cmdParms);
         }
@@ -744,11 +752,11 @@ namespace DBUtil
             StringBuilder sbSql = new StringBuilder();
             string[] idArr = ids.Split(',');
             DbParameter[] cmdParms = new DbParameter[idArr.Length];
-            sbSql.AppendFormat("delete from {0} where {1} in (", type.Name, GetIdName(type));
+            sbSql.AppendFormat("delete from {0} where {1} in (", GetTableName(type), GetIdName(type));
             for (int i = 0; i < idArr.Length; i++)
             {
                 cmdParms[i] = _provider.GetDbParameter(_parameterMark + GetIdName(type) + i, idArr[i]);
-                sbSql.AppendFormat("{1}{2}{3},", type.Name, _parameterMark, GetIdName(type), i);
+                sbSql.AppendFormat("{1}{2}{3},", GetTableName(type), _parameterMark, GetIdName(type), i);
             }
             sbSql.Remove(sbSql.Length - 1, 1);
             sbSql.Append(")");
@@ -767,11 +775,11 @@ namespace DBUtil
             StringBuilder sbSql = new StringBuilder();
             string[] idArr = ids.Split(',');
             DbParameter[] cmdParms = new DbParameter[idArr.Length];
-            sbSql.AppendFormat("delete from {0} where {1} in (", type.Name, GetIdName(type));
+            sbSql.AppendFormat("delete from {0} where {1} in (", GetTableName(type), GetIdName(type));
             for (int i = 0; i < idArr.Length; i++)
             {
                 cmdParms[i] = _provider.GetDbParameter(_parameterMark + GetIdName(type) + i, idArr[i]);
-                sbSql.AppendFormat("{1}{2}{3},", type.Name, _parameterMark, GetIdName(type), i);
+                sbSql.AppendFormat("{1}{2}{3},", GetTableName(type), _parameterMark, GetIdName(type), i);
             }
             sbSql.Remove(sbSql.Length - 1, 1);
             sbSql.Append(")");
@@ -799,7 +807,7 @@ namespace DBUtil
 
             StringBuilder sbSql = new StringBuilder();
             SqlFilter(ref condition);
-            sbSql.Append(string.Format("delete from {0} where {1}", type.Name, condition));
+            sbSql.Append(string.Format("delete from {0} where {1}", GetTableName(type), condition));
 
             ExecuteSql(sbSql.ToString());
         }
@@ -824,7 +832,7 @@ namespace DBUtil
 
             StringBuilder sbSql = new StringBuilder();
             SqlFilter(ref condition);
-            sbSql.Append(string.Format("delete from {0} where {1}", type.Name, condition));
+            sbSql.Append(string.Format("delete from {0} where {1}", GetTableName(type), condition));
 
             await ExecuteSqlAsync(sbSql.ToString());
         }
@@ -838,7 +846,7 @@ namespace DBUtil
         /// </summary>
         private void IDataReaderToObject(Type type, IDataReader rd, ref object result, ref bool hasValue)
         {
-            PropertyInfo[] propertyInfoList = GetEntityProperties(type);
+            PropertyInfoEx[] propertyInfoList = GetEntityProperties(type);
 
             int fieldCount = rd.FieldCount;
             Dictionary<string, string> fields = new Dictionary<string, string>();
@@ -856,17 +864,19 @@ namespace DBUtil
                 hasValue = true;
                 IDataRecord record = rd;
 
-                foreach (PropertyInfo pro in propertyInfoList)
+                foreach (PropertyInfoEx propertyInfoEx in propertyInfoList)
                 {
-                    if (!fields.ContainsKey(pro.Name.ToUpper())) continue;
+                    PropertyInfo propertyInfo = propertyInfoEx.PropertyInfo;
 
-                    object val = record[pro.Name];
+                    if (!fields.ContainsKey(propertyInfoEx.FieldName.ToUpper())) continue;
+
+                    object val = record[propertyInfoEx.FieldName];
 
                     if (val == DBNull.Value) continue;
 
-                    val = val == DBNull.Value ? null : ConvertValue(val, pro.PropertyType);
+                    val = val == DBNull.Value ? null : ConvertValue(val, propertyInfo.PropertyType);
 
-                    pro.SetValue(result, val);
+                    propertyInfo.SetValue(result, val);
                 }
             }
         }
@@ -972,7 +982,7 @@ namespace DBUtil
         {
             Type type = obj.GetType();
 
-            string sql = string.Format("select * from {0} where {1}", type.Name, CreatePkCondition(obj.GetType(), obj));
+            string sql = string.Format("select * from {0} where {1}", GetTableName(type), CreatePkCondition(obj.GetType(), obj));
 
             return Find(type, sql, null);
         }
@@ -984,7 +994,7 @@ namespace DBUtil
         {
             Type type = obj.GetType();
 
-            string sql = string.Format("select * from {0} where {1}", type.Name, CreatePkCondition(obj.GetType(), obj));
+            string sql = string.Format("select * from {0} where {1}", GetTableName(type), CreatePkCondition(obj.GetType(), obj));
 
             return await FindAsync(type, sql, null);
         }
@@ -998,7 +1008,7 @@ namespace DBUtil
         {
             Type type = typeof(T);
 
-            string sql = string.Format("select * from {0} where {2}='{1}'", type.Name, id, GetIdName(type));
+            string sql = string.Format("select * from {0} where {2}='{1}'", GetTableName(type), id, GetIdName(type));
 
             object result = Find(type, sql, null);
 
@@ -1019,7 +1029,7 @@ namespace DBUtil
         {
             Type type = typeof(T);
 
-            string sql = string.Format("select * from {0} where {2}='{1}'", type.Name, id, GetIdName(type));
+            string sql = string.Format("select * from {0} where {2}='{1}'", GetTableName(type), id, GetIdName(type));
 
             object result = await FindAsync(type, sql, null);
 
@@ -1136,7 +1146,7 @@ namespace DBUtil
             }
             else
             {
-                PropertyInfo[] propertyInfoList = GetEntityProperties(typeof(T));
+                PropertyInfoEx[] propertyInfoList = GetEntityProperties(typeof(T));
 
                 int fcnt = rd.FieldCount;
                 Dictionary<string, string> fields = new Dictionary<string, string>();
@@ -1154,17 +1164,19 @@ namespace DBUtil
                     IDataRecord record = rd;
                     T obj = new T();
 
-                    foreach (PropertyInfo pro in propertyInfoList)
+                    foreach (PropertyInfoEx propertyInfoEx in propertyInfoList)
                     {
-                        if (!fields.ContainsKey(pro.Name.ToUpper())) continue;
+                        PropertyInfo propertyInfo = propertyInfoEx.PropertyInfo;
 
-                        object val = record[pro.Name];
+                        if (!fields.ContainsKey(propertyInfoEx.FieldName.ToUpper())) continue;
+
+                        object val = record[propertyInfoEx.FieldName];
 
                         if (val == DBNull.Value) continue;
 
-                        val = val == DBNull.Value ? null : ConvertValue(val, pro.PropertyType);
+                        val = val == DBNull.Value ? null : ConvertValue(val, propertyInfo.PropertyType);
 
-                        pro.SetValue(obj, val);
+                        propertyInfo.SetValue(obj, val);
                     }
 
                     list.Add((T)obj);
@@ -1476,12 +1488,14 @@ namespace DBUtil
         /// </summary>
         public static string GetIdName(Type type)
         {
-            PropertyInfo[] propertyInfoList = GetEntityProperties(type);
-            foreach (PropertyInfo propertyInfo in propertyInfoList)
+            PropertyInfoEx[] propertyInfoList = GetEntityProperties(type);
+            foreach (PropertyInfoEx propertyInfoEx in propertyInfoList)
             {
+                PropertyInfo propertyInfo = propertyInfoEx.PropertyInfo;
+
                 if (propertyInfo.GetCustomAttributes(typeof(IsIdAttribute), false).Length > 0)
                 {
-                    return propertyInfo.Name;
+                    return propertyInfoEx.FieldName;
                 }
             }
             return "Id";
@@ -1492,18 +1506,27 @@ namespace DBUtil
         /// <summary>
         /// 获取实体类属性
         /// </summary>
-        private static PropertyInfo[] GetEntityProperties(Type type)
+        private static PropertyInfoEx[] GetEntityProperties(Type type)
         {
-            return PropertiesCache.TryGet<PropertyInfo[]>(type, () =>
+            return PropertiesCache.TryGet<PropertyInfoEx[]>(type, () =>
             {
-                List<PropertyInfo> result = new List<PropertyInfo>();
+                List<PropertyInfoEx> result = new List<PropertyInfoEx>();
                 PropertyInfo[] propertyInfoList = type.GetProperties();
                 foreach (PropertyInfo propertyInfo in propertyInfoList)
                 {
-                    if (propertyInfo.GetCustomAttribute<EdmRelationshipNavigationPropertyAttribute>() == null
-                        && propertyInfo.GetCustomAttribute<BrowsableAttribute>() == null)
+                    if (propertyInfo.GetCustomAttribute<EdmRelationshipNavigationPropertyAttribute>() == null && propertyInfo.GetCustomAttribute<BrowsableAttribute>() == null)
                     {
-                        result.Add(propertyInfo);
+                        PropertyInfoEx propertyInfoEx = new PropertyInfoEx(propertyInfo);
+                        IsDBFieldAttribute isDBFieldAttribute = propertyInfo.GetCustomAttribute<IsDBFieldAttribute>();
+                        if (isDBFieldAttribute != null && !string.IsNullOrWhiteSpace(isDBFieldAttribute.FieldName))
+                        {
+                            propertyInfoEx.FieldName = isDBFieldAttribute.FieldName;
+                        }
+                        else
+                        {
+                            propertyInfoEx.FieldName = propertyInfo.Name;
+                        }
+                        result.Add(propertyInfoEx);
                     }
                 }
                 return result.ToArray();
@@ -1519,21 +1542,23 @@ namespace DBUtil
         {
             StringBuilder sql = new StringBuilder();
 
-            PropertyInfo[] propertyInfoList = GetEntityProperties(type);
+            PropertyInfoEx[] propertyInfoList = GetEntityProperties(type);
             int i = 0;
-            foreach (PropertyInfo propertyInfo in propertyInfoList)
+            foreach (PropertyInfoEx propertyInfoEx in propertyInfoList)
             {
+                PropertyInfo propertyInfo = propertyInfoEx.PropertyInfo;
+
                 if (propertyInfo.GetCustomAttributes(typeof(IsIdAttribute), false).Length > 0)
                 {
                     if (i != 0) sql.Append(" and ");
                     object fieldValue = val.GetType().GetProperty(propertyInfo.Name).GetValue(val, null);
                     if (fieldValue.GetType() == typeof(string) || fieldValue.GetType() == typeof(String))
                     {
-                        sql.AppendFormat(" {0}='{1}'", propertyInfo.Name, fieldValue);
+                        sql.AppendFormat(" {0}='{1}'", propertyInfoEx.FieldName, fieldValue);
                     }
                     else
                     {
-                        sql.AppendFormat(" {0}={1}", propertyInfo.Name, fieldValue);
+                        sql.AppendFormat(" {0}={1}", propertyInfoEx.FieldName, fieldValue);
                     }
                     i++;
                 }
@@ -1561,7 +1586,25 @@ namespace DBUtil
             }
             return false;
         }
-        #endregion 
+        #endregion
+
+        #region 获取数据库表名
+        /// <summary>
+        /// 获取数据库表名
+        /// </summary>
+        private string GetTableName(Type type)
+        {
+            DBTableAttribute dbTableAttribute = type.GetCustomAttribute<DBTableAttribute>();
+            if (dbTableAttribute != null && !string.IsNullOrWhiteSpace(dbTableAttribute.TableName))
+            {
+                return dbTableAttribute.TableName;
+            }
+            else
+            {
+                return type.Name;
+            }
+        }
+        #endregion
 
         #endregion
 

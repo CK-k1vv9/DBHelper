@@ -6,17 +6,17 @@ using DBUtil;
 namespace Models
 {
     /// <summary>
-    /// ¶©µ¥±í
+    /// è®¢å•è¡¨
     /// </summary>
-    public partial class BS_ORDER
+    public partial class BsOrder
     {
         /// <summary>
-        /// ¶©µ¥Ã÷Ï¸¼¯ºÏ
+        /// è®¢å•æ˜ç»†é›†åˆ
         /// </summary>
-        public List<BS_ORDER_DETAIL> DetailList { get; set; }
+        public List<BsOrderDetail> DetailList { get; set; }
 
         /// <summary>
-        /// ÏÂµ¥ÓÃ»§ĞÕÃû
+        /// ä¸‹å•ç”¨æˆ·å§“å
         /// </summary>
         public string OrderUserRealName { get; set; }
     }

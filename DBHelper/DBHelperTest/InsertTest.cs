@@ -23,39 +23,39 @@ namespace DBHelperTest
         {
             string userId = "10";
 
-            BS_ORDER order = new BS_ORDER();
-            order.ORDER_TIME = DateTime.Now;
-            order.AMOUNT = 0;
-            order.ORDER_USERID = 10;
-            order.STATUS = 0;
-            order.CREATE_USERID = userId;
+            BsOrder order = new BsOrder();
+            order.OrderTime = DateTime.Now;
+            order.Amount = 0;
+            order.OrderUserid = Convert.ToInt64(userId);
+            order.Status = 0;
+            order.CreateUserid = userId;
 
-            List<BS_ORDER_DETAIL> detailList = new List<BS_ORDER_DETAIL>();
-            BS_ORDER_DETAIL detail = new BS_ORDER_DETAIL();
-            detail.GOODS_NAME = "电脑";
-            detail.QUANTITY = 3;
-            detail.PRICE = 5100;
-            detail.SPEC = "台";
-            detail.CREATE_USERID = userId;
-            detail.ORDER_NUM = 1;
+            List<BsOrderDetail> detailList = new List<BsOrderDetail>();
+            BsOrderDetail detail = new BsOrderDetail();
+            detail.GoodsName = "电脑";
+            detail.Quantity = 3;
+            detail.Price = 5100;
+            detail.Spec = "台";
+            detail.CreateUserid = userId;
+            detail.OrderNum = 1;
             detailList.Add(detail);
 
-            detail = new BS_ORDER_DETAIL();
-            detail.GOODS_NAME = "鼠标";
-            detail.QUANTITY = 12;
-            detail.PRICE = (decimal)50.68;
-            detail.SPEC = "个";
-            detail.CREATE_USERID = userId;
-            detail.ORDER_NUM = 2;
+            detail = new BsOrderDetail();
+            detail.GoodsName = "鼠标";
+            detail.Quantity = 12;
+            detail.Price = (decimal)50.68;
+            detail.Spec = "个";
+            detail.CreateUserid = userId;
+            detail.OrderNum = 2;
             detailList.Add(detail);
 
-            detail = new BS_ORDER_DETAIL();
-            detail.GOODS_NAME = "键盘";
-            detail.QUANTITY = 11;
-            detail.PRICE = (decimal)123.66;
-            detail.SPEC = "个";
-            detail.CREATE_USERID = userId;
-            detail.ORDER_NUM = 3;
+            detail = new BsOrderDetail();
+            detail.GoodsName = "键盘";
+            detail.Quantity = 11;
+            detail.Price = (decimal)123.66;
+            detail.Spec = "个";
+            detail.CreateUserid = userId;
+            detail.OrderNum = 3;
             detailList.Add(detail);
 
             m_BsOrderDal.Insert(order, detailList);
@@ -78,11 +78,11 @@ namespace DBHelperTest
         [TestMethod]
         public void TestInsertUser()
         {
-            SYS_USER user = new SYS_USER();
-            user.USER_NAME = "testUser";
-            user.REAL_NAME = "测试插入用户";
-            user.PASSWORD = "123456";
-            user.CREATE_USERID = "1";
+            SysUser user = new SysUser();
+            user.UserName = "testUser";
+            user.RealName = "测试插入用户";
+            user.Password = "123456";
+            user.CreateUserid = "1";
             m_SysUserDal.Insert(user);
         }
         #endregion
@@ -91,11 +91,11 @@ namespace DBHelperTest
         [TestMethod]
         public async Task TestInsertUserAsync()
         {
-            SYS_USER user = new SYS_USER();
-            user.USER_NAME = "testUser";
-            user.REAL_NAME = "测试插入用户";
-            user.PASSWORD = "123456";
-            user.CREATE_USERID = "1";
+            SysUser user = new SysUser();
+            user.UserName = "testUser";
+            user.RealName = "测试插入用户";
+            user.Password = "123456";
+            user.CreateUserid = "1";
             var task = m_SysUserDal.InsertAsync(user);
             await task;
         }

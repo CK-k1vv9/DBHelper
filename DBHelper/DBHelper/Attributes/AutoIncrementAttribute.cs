@@ -28,5 +28,14 @@ namespace DBUtil
                 _value = value;
             }
         }
+
+        /// <summary>
+        /// 标识该属性是自增字段 或 标识该类的主键是自增字段
+        /// </summary>
+        /// <param name="value">true:自增 false:不自增</param>
+        public AutoIncrementAttribute(bool value = true)
+        {
+            _value = value;
+        }
     }
 }

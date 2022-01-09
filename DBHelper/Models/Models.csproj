@@ -40,14 +40,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ExtModels\BS_ORDER.cs" />
-    <Compile Include="ExtModels\BS_ORDER_DETAIL.cs" />
-    <Compile Include="ExtModels\SYS_USER.cs" />
-    <Compile Include="Models\BS_ORDER.cs" />
-    <Compile Include="Models\BS_ORDER_DETAIL.cs" />
-    <Compile Include="Models\CARINFO_MERGE.cs" />
-    <Compile Include="Models\PT_CAMERA_INFO.cs" />
-    <Compile Include="Models\SYS_USER.cs" />
+    <Compile Include="ExtModels\BsOrder.cs" />
+    <Compile Include="ExtModels\BsOrderDetail.cs" />
+    <Compile Include="ExtModels\SysUser.cs" />
+    <Compile Include="Models\BsOrder.cs" />
+    <Compile Include="Models\BsOrderDetail.cs" />
+    <Compile Include="Models\CarinfoMerge.cs" />
+    <Compile Include="Models\PtCameraInfo.cs" />
+    <Compile Include="Models\SysUser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

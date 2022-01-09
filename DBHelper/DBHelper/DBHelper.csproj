@@ -50,6 +50,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\AutoIncrementAttribute.cs" />
+    <Compile Include="Attributes\DBTableAttribute.cs" />
+    <Compile Include="Models\PropertyInfoEx.cs" />
     <Compile Include="SessionHelper.cs" />
     <Compile Include="Attributes\IsDBFieldAttribute.cs" />
     <Compile Include="Attributes\IsIdAttribute.cs" />

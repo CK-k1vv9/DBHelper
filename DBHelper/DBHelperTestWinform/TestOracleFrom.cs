@@ -40,13 +40,13 @@ namespace DBHelperTestWinform
                 Log("开始");
                 try
                 {
-                    List<CARINFO_MERGE> list = CacheUtil.TryGetValue<List<CARINFO_MERGE>>("CARINFO_MERGE", () =>
+                    List<CarinfoMerge> list = CacheUtil.TryGetValue<List<CarinfoMerge>>("CARINFO_MERGE", () =>
                     {
                         using (var session = DBHelper.GetSession())
                         {
                             string sql = "select * from CARINFO_MERGE where rownum<20000";
                             LogTimeUtil logTime = new LogTimeUtil();
-                            List<CARINFO_MERGE> result = session.FindListBySql<CARINFO_MERGE>(sql);
+                            List<CarinfoMerge> result = session.FindListBySql<CarinfoMerge>(sql);
                             Log(logTime.LogTime("耗时"));
                             return result;
                         }
@@ -69,14 +69,14 @@ namespace DBHelperTestWinform
                 {
                     using (var session = DBHelperMySQL.GetSession())
                     {
-                        BS_ORDER result = session.FindById<BS_ORDER>("991de30a46ad4599919b56d1a13d100c");
+                        BsOrder result = session.FindById<BsOrder>("991de30a46ad4599919b56d1a13d100c");
                     }
 
                     using (var session = DBHelper.GetSession())
                     {
                         string sql = "select * from CARINFO_MERGE where rownum<20000";
                         LogTimeUtil logTime = new LogTimeUtil();
-                        List<CARINFO_MERGE> result = session.FindListBySql<CARINFO_MERGE>(sql);
+                        List<CarinfoMerge> result = session.FindListBySql<CarinfoMerge>(sql);
                         Log(logTime.LogTime("耗时"));
                     }
                     Log("结束");

@@ -18,7 +18,7 @@ namespace DAL
         /// <summary>
         /// 添加
         /// </summary>
-        public string Insert(BS_ORDER order, List<BS_ORDER_DETAIL> detailList)
+        public string Insert(BsOrder order, List<BsOrderDetail> detailList)
         {
             using (var session = DBHelper.GetSession())
             {
@@ -26,25 +26,25 @@ namespace DAL
                 {
                     session.BeginTransaction();
 
-                    order.ID = Guid.NewGuid().ToString("N");
-                    order.CREATE_TIME = DateTime.Now;
+                    order.Id = Guid.NewGuid().ToString("N");
+                    order.CreateTime = DateTime.Now;
 
                     decimal amount = 0;
-                    foreach (BS_ORDER_DETAIL detail in detailList)
+                    foreach (BsOrderDetail detail in detailList)
                     {
-                        detail.ID = Guid.NewGuid().ToString("N");
-                        detail.ORDER_ID = order.ID;
-                        detail.CREATE_TIME = DateTime.Now;
-                        amount += detail.PRICE * detail.QUANTITY;
+                        detail.Id = Guid.NewGuid().ToString("N");
+                        detail.OrderId = order.Id;
+                        detail.CreateTime = DateTime.Now;
+                        amount += detail.Price * detail.Quantity;
                         session.Insert(detail);
                     }
-                    order.AMOUNT = amount;
+                    order.Amount = amount;
 
                     session.Insert(order);
 
                     session.CommitTransaction();
 
-                    return order.ID;
+                    return order.Id;
                 }
                 catch (Exception ex)
                 {
@@ -60,7 +60,7 @@ namespace DAL
         /// <summary>
         /// 添加
         /// </summary>
-        public async Task<string> InsertAsync(BS_ORDER order, List<BS_ORDER_DETAIL> detailList)
+        public async Task<string> InsertAsync(BsOrder order, List<BsOrderDetail> detailList)
         {
             using (var session = await DBHelper.GetSessionAsync())
             {
@@ -68,25 +68,25 @@ namespace DAL
                 {
                     session.BeginTransaction();
 
-                    order.ID = Guid.NewGuid().ToString("N");
-                    order.CREATE_TIME = DateTime.Now;
+                    order.Id = Guid.NewGuid().ToString("N");
+                    order.CreateTime = DateTime.Now;
 
                     decimal amount = 0;
-                    foreach (BS_ORDER_DETAIL detail in detailList)
+                    foreach (BsOrderDetail detail in detailList)
                     {
-                        detail.ID = Guid.NewGuid().ToString("N");
-                        detail.ORDER_ID = order.ID;
-                        detail.CREATE_TIME = DateTime.Now;
-                        amount += detail.PRICE * detail.QUANTITY;
+                        detail.Id = Guid.NewGuid().ToString("N");
+                        detail.OrderId = order.Id;
+                        detail.CreateTime = DateTime.Now;
+                        amount += detail.Price * detail.Quantity;
                         await session.InsertAsync(detail);
                     }
-                    order.AMOUNT = amount;
+                    order.Amount = amount;
 
                     await session.InsertAsync(order);
 
                     session.CommitTransaction();
 
-                    return order.ID;
+                    return order.Id;
                 }
                 catch (Exception ex)
                 {
@@ -102,7 +102,7 @@ namespace DAL
         /// <summary>
         /// 修改
         /// </summary>
-        public string Update(BS_ORDER order, List<BS_ORDER_DETAIL> detailList)
+        public string Update(BsOrder order, List<BsOrderDetail> detailList)
         {
             using (var session = DBHelper.GetSession())
             {
@@ -110,42 +110,42 @@ namespace DAL
                 {
                     session.BeginTransaction();
 
-                    List<BS_ORDER_DETAIL> oldDetailList = ServiceHelper.Get<BsOrderDetailDal>().GetListByOrderId(order.ID); //根据订单ID查询旧订单明细
+                    List<BsOrderDetail> oldDetailList = ServiceHelper.Get<BsOrderDetailDal>().GetListByOrderId(order.Id); //根据订单ID查询旧订单明细
 
-                    foreach (BS_ORDER_DETAIL oldDetail in oldDetailList)
+                    foreach (BsOrderDetail oldDetail in oldDetailList)
                     {
-                        if (!detailList.Exists(a => a.ID == oldDetail.ID)) //该旧订单明细已从列表中删除
+                        if (!detailList.Exists(a => a.Id == oldDetail.Id)) //该旧订单明细已从列表中删除
                         {
-                            session.DeleteById<BS_ORDER_DETAIL>(oldDetail.ID); //删除旧订单明细
+                            session.DeleteById<BsOrderDetail>(oldDetail.Id); //删除旧订单明细
                         }
                     }
 
                     decimal amount = 0;
-                    foreach (BS_ORDER_DETAIL detail in detailList)
+                    foreach (BsOrderDetail detail in detailList)
                     {
-                        amount += detail.PRICE * detail.QUANTITY;
+                        amount += detail.Price * detail.Quantity;
 
-                        if (oldDetailList.Exists(a => a.ID == detail.ID)) //该订单明细存在
+                        if (oldDetailList.Exists(a => a.Id == detail.Id)) //该订单明细存在
                         {
-                            detail.UPDATE_TIME = DateTime.Now;
+                            detail.UpdateTime = DateTime.Now;
                             session.Update(detail);
                         }
                         else //该订单明细不存在
                         {
-                            detail.ID = Guid.NewGuid().ToString("N");
-                            detail.ORDER_ID = order.ID;
-                            detail.CREATE_TIME = DateTime.Now;
+                            detail.Id = Guid.NewGuid().ToString("N");
+                            detail.OrderId = order.Id;
+                            detail.CreateTime = DateTime.Now;
                             session.Insert(detail);
                         }
                     }
-                    order.AMOUNT = amount;
+                    order.Amount = amount;
 
-                    order.UPDATE_TIME = DateTime.Now;
+                    order.UpdateTime = DateTime.Now;
                     session.Update(order);
 
                     session.CommitTransaction();
 
-                    return order.ID;
+                    return order.Id;
                 }
                 catch (Exception ex)
                 {
@@ -161,7 +161,7 @@ namespace DAL
         /// <summary>
         /// 修改
         /// </summary>
-        public async Task<string> UpdateAsync(BS_ORDER order, List<BS_ORDER_DETAIL> detailList)
+        public async Task<string> UpdateAsync(BsOrder order, List<BsOrderDetail> detailList)
         {
             using (var session = await DBHelper.GetSessionAsync())
             {
@@ -169,42 +169,42 @@ namespace DAL
                 {
                     session.BeginTransaction();
 
-                    List<BS_ORDER_DETAIL> oldDetailList = ServiceHelper.Get<BsOrderDetailDal>().GetListByOrderId(order.ID); //根据订单ID查询旧订单明细
+                    List<BsOrderDetail> oldDetailList = ServiceHelper.Get<BsOrderDetailDal>().GetListByOrderId(order.Id); //根据订单ID查询旧订单明细
 
-                    foreach (BS_ORDER_DETAIL oldDetail in oldDetailList)
+                    foreach (BsOrderDetail oldDetail in oldDetailList)
                     {
-                        if (!detailList.Exists(a => a.ID == oldDetail.ID)) //该旧订单明细已从列表中删除
+                        if (!detailList.Exists(a => a.Id == oldDetail.Id)) //该旧订单明细已从列表中删除
                         {
-                            session.DeleteById<BS_ORDER_DETAIL>(oldDetail.ID); //删除旧订单明细
+                            session.DeleteById<BsOrderDetail>(oldDetail.Id); //删除旧订单明细
                         }
                     }
 
                     decimal amount = 0;
-                    foreach (BS_ORDER_DETAIL detail in detailList)
+                    foreach (BsOrderDetail detail in detailList)
                     {
-                        amount += detail.PRICE * detail.QUANTITY;
+                        amount += detail.Price * detail.Quantity;
 
-                        if (oldDetailList.Exists(a => a.ID == detail.ID)) //该订单明细存在
+                        if (oldDetailList.Exists(a => a.Id == detail.Id)) //该订单明细存在
                         {
-                            detail.UPDATE_TIME = DateTime.Now;
+                            detail.UpdateTime = DateTime.Now;
                             await session.UpdateAsync(detail);
                         }
                         else //该订单明细不存在
                         {
-                            detail.ID = Guid.NewGuid().ToString("N");
-                            detail.ORDER_ID = order.ID;
-                            detail.CREATE_TIME = DateTime.Now;
+                            detail.Id = Guid.NewGuid().ToString("N");
+                            detail.OrderId = order.Id;
+                            detail.CreateTime = DateTime.Now;
                             session.Insert(detail);
                         }
                     }
-                    order.AMOUNT = amount;
+                    order.Amount = amount;
 
-                    order.UPDATE_TIME = DateTime.Now;
+                    order.UpdateTime = DateTime.Now;
                     await session.UpdateAsync(order);
 
                     session.CommitTransaction();
 
-                    return order.ID;
+                    return order.Id;
                 }
                 catch (Exception ex)
                 {
@@ -220,13 +220,13 @@ namespace DAL
         /// <summary>
         /// 根据ID查询单个记录
         /// </summary>
-        public BS_ORDER Get(string id)
+        public BsOrder Get(string id)
         {
             using (var session = DBHelper.GetSession())
             {
-                List<BS_ORDER_DETAIL> detailList = ServiceHelper.Get<BsOrderDetailDal>().GetListByOrderId(id);
+                List<BsOrderDetail> detailList = ServiceHelper.Get<BsOrderDetailDal>().GetListByOrderId(id);
 
-                BS_ORDER result = session.FindById<BS_ORDER>(id);
+                BsOrder result = session.FindById<BsOrder>(id);
                 result.DetailList = detailList;
 
                 return result;
@@ -238,7 +238,7 @@ namespace DAL
         /// <summary>
         /// 查询集合
         /// </summary>
-        public List<BS_ORDER> GetList(int? status, string remark, DateTime? startTime, DateTime? endTime)
+        public List<BsOrder> GetList(int? status, string remark, DateTime? startTime, DateTime? endTime)
         {
             using (var session = DBHelper.GetSession())
             {
@@ -270,7 +270,7 @@ namespace DAL
 
                 sql.AppendSql(" order by t.order_time desc, t.id asc ");
 
-                List<BS_ORDER> list = session.FindListBySql<BS_ORDER>(sql.SQL, sql.Params);
+                List<BsOrder> list = session.FindListBySql<BsOrder>(sql.SQL, sql.Params);
                 return list;
             }
         }
@@ -280,7 +280,7 @@ namespace DAL
         /// <summary>
         /// 查询集合
         /// </summary>
-        public async Task<List<BS_ORDER>> GetListAsync(int? status, string remark, DateTime? startTime, DateTime? endTime)
+        public async Task<List<BsOrder>> GetListAsync(int? status, string remark, DateTime? startTime, DateTime? endTime)
         {
             using (var session = await DBHelper.GetSessionAsync())
             {
@@ -312,7 +312,7 @@ namespace DAL
 
                 sql.AppendSql(" order by t.order_time desc, t.id asc ");
 
-                List<BS_ORDER> list = await session.FindListBySqlAsync<BS_ORDER>(sql.SQL, sql.Params);
+                List<BsOrder> list = await session.FindListBySqlAsync<BsOrder>(sql.SQL, sql.Params);
                 return list;
             }
         }
@@ -322,7 +322,7 @@ namespace DAL
         /// <summary>
         /// 分页查询集合
         /// </summary>
-        public List<BS_ORDER> GetListPage(ref PagerModel pager, int? status, string remark, DateTime? startTime, DateTime? endTime)
+        public List<BsOrder> GetListPage(ref PagerModel pager, int? status, string remark, DateTime? startTime, DateTime? endTime)
         {
             using (var session = DBHelper.GetSession())
             {
@@ -353,8 +353,8 @@ namespace DAL
                 }
 
                 string orderby = " order by t.order_time desc, t.id asc ";
-                pager = session.FindPageBySql<BS_ORDER>(sql.SQL, orderby, pager.PageSize, pager.CurrentPage, sql.Params);
-                return pager.Result as List<BS_ORDER>;
+                pager = session.FindPageBySql<BsOrder>(sql.SQL, orderby, pager.PageSize, pager.CurrentPage, sql.Params);
+                return pager.Result as List<BsOrder>;
             }
         }
         #endregion
@@ -394,7 +394,7 @@ namespace DAL
                 }
 
                 string orderby = " order by t.order_time desc, t.id asc ";
-                pager = await session.FindPageBySqlAsync<BS_ORDER>(sql.SQL, orderby, pager.PageSize, pager.CurrentPage, sql.Params);
+                pager = await session.FindPageBySqlAsync<BsOrder>(sql.SQL, orderby, pager.PageSize, pager.CurrentPage, sql.Params);
                 return pager;
             }
         }

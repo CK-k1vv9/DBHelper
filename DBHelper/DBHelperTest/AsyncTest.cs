@@ -22,9 +22,9 @@ namespace DBHelperTest
         public async Task TestQueryAsync()
         {
             var task = m_BsOrderDal.GetListAsync(0, null, DateTime.MinValue, DateTime.Now.AddDays(1));
-            List<BS_ORDER> list = await task;
+            List<BsOrder> list = await task;
 
-            foreach (BS_ORDER item in list)
+            foreach (BsOrder item in list)
             {
                 Console.WriteLine(ModelToStringUtil.ToString(item));
             }

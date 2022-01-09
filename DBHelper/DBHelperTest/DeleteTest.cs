@@ -30,7 +30,7 @@ namespace DBHelperTest
         {
             using (var session = DBHelper.GetSession())
             {
-                session.DeleteByCondition<SYS_USER>(string.Format("id>=12"));
+                session.DeleteByCondition<SysUser>(string.Format("id>=12"));
             }
         }
         #endregion

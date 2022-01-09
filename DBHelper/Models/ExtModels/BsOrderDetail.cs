@@ -6,10 +6,9 @@ using DBUtil;
 namespace Models
 {
     /// <summary>
-    /// 用户表
+    /// 订单明细表
     /// </summary>
-    [AutoIncrement]
-    public partial class SYS_USER
+    public partial class BsOrderDetail
     {
 
     }

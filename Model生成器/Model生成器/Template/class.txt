@@ -9,6 +9,7 @@ namespace Models
     /// #table_comments
     /// </summary>
     [Serializable]
+    #table_atrribute
     public partial class #table_name
     {
         #field start
@@ -16,7 +17,7 @@ namespace Models
         /// #field_comments
         /// </summary>
         [IsId]
-        [IsDBField]
+        #field_atrribute_value
         public #data_type #field_name { get; set; }
         #field end
     }
