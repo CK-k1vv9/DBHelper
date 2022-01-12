@@ -19,7 +19,7 @@ namespace DBHelperTest
         [TestMethod]
         public void TestQuery()
         {
-            List<BsOrder> list = m_BsOrderDal.GetList(0, null, DateTime.MinValue, DateTime.Now.AddDays(1));
+            List<BsOrder> list = m_BsOrderDal.GetList(0, "test", DateTime.MinValue, DateTime.Now.AddDays(1));
 
             foreach (BsOrder item in list)
             {

@@ -89,5 +89,21 @@ namespace DBUtil
         }
         #endregion
 
+        #region 创建 Like SQL
+        public ResolveLikeModel ResolveLike(string value)
+        {
+            //todo:ResolveLike
+            throw new NotImplementedException();
+        }
+        #endregion
+
+        #region 创建 字符串转数据库日期时间类型 SQL
+        public ResolveDateTimeModel ResolveDateTime(string value, string format)
+        {
+            //todo:ResolveDateTime
+            throw new NotImplementedException();
+        }
+        #endregion
+
     }
 }

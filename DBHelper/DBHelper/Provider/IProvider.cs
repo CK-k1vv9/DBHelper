@@ -52,5 +52,15 @@ namespace DBUtil
         /// </summary>
         string CreatePageSql(string sql, string orderby, int pageSize, int currentPage, int totalRows);
 
+        /// <summary>
+        /// 创建 Like SQL
+        /// </summary>
+        ResolveLikeModel ResolveLike(string value);
+
+        /// <summary>
+        /// 创建 字符串转数据库日期时间类型 SQL
+        /// </summary>
+        ResolveDateTimeModel ResolveDateTime(string value, string format);
+
     }
 }

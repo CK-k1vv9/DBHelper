@@ -41,10 +41,13 @@ namespace DBUtil
         #endregion
 
         #region 构造函数
-        public SqlString(IProvider provider, string sql, params object[] args)
+        public SqlString(IProvider provider, string sql = null, params object[] args)
         {
             _provider = provider;
-            AppendSql(sql, args);
+            if (sql != null)
+            {
+                AppendSql(sql, args);
+            }
         }
         #endregion
 
@@ -73,7 +76,28 @@ namespace DBUtil
             List<string> keyList = dict.Keys.ToList();
             for (int i = 0; i < keyList.Count; i++)
             {
-                _paramList.Add(_provider.GetDbParameter(keyList[i], args[i]));
+                string key = keyList[i];
+                object value = args[i];
+                Type valueType = value != null ? value.GetType() : null;
+
+                if (valueType == typeof(ResolveLikeModel))
+                {
+                    ResolveLikeModel resolveLikeModel = value as ResolveLikeModel;
+                    string markKey = _provider.GetParameterMark() + key;
+                    sql = sql.Replace(markKey, string.Format(resolveLikeModel.Sql, markKey));
+                    _paramList.Add(_provider.GetDbParameter(key, resolveLikeModel.Value));
+                }
+                else if (valueType == typeof(ResolveDateTimeModel))
+                {
+                    ResolveDateTimeModel resolveDateTimeModel = value as ResolveDateTimeModel;
+                    string markKey = _provider.GetParameterMark() + key;
+                    sql = sql.Replace(markKey, string.Format(resolveDateTimeModel.Sql, markKey));
+                    _paramList.Add(_provider.GetDbParameter(key, resolveDateTimeModel.Value));
+                }
+                else
+                {
+                    _paramList.Add(_provider.GetDbParameter(key, value));
+                }
             }
 
             _sql.Append(sql);
@@ -105,6 +129,28 @@ namespace DBUtil
         {
             string newStr = _provider.GetParameterMark() + name;
             return sql.Replace(oldStr, newStr);
+        }
+        #endregion
+
+        #region 创建 Like SQL
+        /// <summary>
+        /// 创建 Like SQL
+        /// </summary>
+        public ResolveLikeModel ResolveLike(string value)
+        {
+            return _provider.ResolveLike(value);
+        }
+        #endregion
+
+        #region 创建 字符串转数据库日期时间类型 SQL
+        /// <summary>
+        /// 创建 字符串转数据库日期时间类型 SQL
+        /// </summary>
+        /// <param name="value">字符串格式的日期</param>
+        /// <param name="format">数据库日期时间格式化字符串</param>
+        public ResolveDateTimeModel ResolveDateTime(string value, string format = null)
+        {
+            return _provider.ResolveDateTime(value, format);
         }
         #endregion
 

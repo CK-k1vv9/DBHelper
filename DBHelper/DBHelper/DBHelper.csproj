@@ -51,6 +51,8 @@
   <ItemGroup>
     <Compile Include="Attributes\AutoIncrementAttribute.cs" />
     <Compile Include="Attributes\DBTableAttribute.cs" />
+    <Compile Include="Models\ResolveDateTimeModel.cs" />
+    <Compile Include="Models\ResolveLikeModel.cs" />
     <Compile Include="Models\PropertyInfoEx.cs" />
     <Compile Include="SessionHelper.cs" />
     <Compile Include="Attributes\IsDBFieldAttribute.cs" />

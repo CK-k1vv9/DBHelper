@@ -21,7 +21,7 @@ namespace DBHelperTest
         [TestMethod]
         public async Task TestQueryAsync()
         {
-            var task = m_BsOrderDal.GetListAsync(0, null, DateTime.MinValue, DateTime.Now.AddDays(1));
+            var task = m_BsOrderDal.GetListAsync(0, "test", DateTime.MinValue, DateTime.Now.AddDays(1));
             List<BsOrder> list = await task;
 
             foreach (BsOrder item in list)

@@ -90,5 +90,23 @@ namespace DBUtil
         }
         #endregion
 
+        #region 创建 Like SQL
+        public ResolveLikeModel ResolveLike(string value)
+        {
+            return new ResolveLikeModel("concat('%',{0},'%')", value);
+        }
+        #endregion
+
+        #region 创建 字符串转数据库日期时间类型 SQL
+        public ResolveDateTimeModel ResolveDateTime(string value, string format)
+        {
+            if (string.IsNullOrWhiteSpace(format))
+            {
+                format = "%Y-%m-%d %H:%i:%s";
+            }
+            return new ResolveDateTimeModel("STR_TO_DATE({0}, '" + format + "')", value);
+        }
+        #endregion
+
     }
 }

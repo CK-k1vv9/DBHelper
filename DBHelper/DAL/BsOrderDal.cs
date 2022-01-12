@@ -242,11 +242,18 @@ namespace DAL
         {
             using (var session = DBHelper.GetSession())
             {
-                SqlString sql = new SqlString(session.Provider, @"
+                SqlString sql = new SqlString(session.Provider);
+
+                sql.AppendSql(@"
                     select t.*, u.real_name as OrderUserRealName
                     from bs_order t
                     left join sys_user u on t.order_userid=u.id
-                    where 1=1");
+                    where 1=1
+                    and (t.remark like @remark1 or t.remark like @remark2)
+                    and t.order_time >= @startTime
+                    and t.order_time <= @endTime ",
+                    sql.ResolveLike("test2"), sql.ResolveLike("test3"),
+                    sql.ResolveDateTime(startTime.Value.ToString("yyyy-MM-dd HH:mm:ss")), sql.ResolveDateTime(endTime.Value.ToString("yyyy-MM-dd HH:mm:ss")));
 
                 if (status != null)
                 {
@@ -255,17 +262,17 @@ namespace DAL
 
                 if (!string.IsNullOrWhiteSpace(remark))
                 {
-                    sql.AppendSql(" and t.remark like concat('%',@roomNo,'%')", remark);
+                    //sql.AppendSql(" and t.remark like @remark", sql.ResolveLike(remark));
                 }
 
                 if (startTime != null)
                 {
-                    sql.AppendSql(" and t.order_time>=STR_TO_DATE(@startTime, '%Y-%m-%d %H:%i:%s') ", startTime.Value.ToString("yyyy-MM-dd HH:mm:ss"));
+                    //sql.AppendSql(" and t.order_time >= @startTime ", sql.ResolveDateTime(startTime.Value.ToString("yyyy-MM-dd HH:mm:ss")));
                 }
 
                 if (endTime != null)
                 {
-                    sql.AppendSql(" and t.order_time<=STR_TO_DATE(@endTime, '%Y-%m-%d %H:%i:%s') ", endTime.Value.ToString("yyyy-MM-dd HH:mm:ss"));
+                    //sql.AppendSql(" and t.order_time <= @endTime ", sql.ResolveDateTime(endTime.Value.ToString("yyyy-MM-dd HH:mm:ss")));
                 }
 
                 sql.AppendSql(" order by t.order_time desc, t.id asc ");
@@ -297,7 +304,7 @@ namespace DAL
 
                 if (!string.IsNullOrWhiteSpace(remark))
                 {
-                    sql.AppendSql(" and t.remark like concat('%',@roomNo,'%')", remark);
+                    sql.AppendSql(" and t.remark like @remark", sql.ResolveLike(remark));
                 }
 
                 if (startTime != null)
@@ -339,7 +346,7 @@ namespace DAL
 
                 if (!string.IsNullOrWhiteSpace(remark))
                 {
-                    sql.AppendSql(" and t.remark like concat('%',@roomNo,'%')", remark);
+                    sql.AppendSql(" and t.remark like concat('%',@remark,'%')", remark);
                 }
 
                 if (startTime != null)
@@ -380,7 +387,7 @@ namespace DAL
 
                 if (!string.IsNullOrWhiteSpace(remark))
                 {
-                    sql.AppendSql(" and t.remark like concat('%',@roomNo,'%')", remark);
+                    sql.AppendSql(" and t.remark like concat('%',@remark,'%')", remark);
                 }
 
                 if (startTime != null)
