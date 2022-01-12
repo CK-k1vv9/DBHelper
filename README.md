@@ -107,6 +107,16 @@ public SysUser Get(string id)
 }
 ```
 
+### 简单查询
+
+```C#
+using (var session = DBHelper.GetSession())
+{
+    string sql = "select * from CARINFO_MERGE";
+    List<CarinfoMerge> result = session.FindListBySql<CarinfoMerge>(sql);
+}
+```
+
 ### 分页查询
 
 ```C#
