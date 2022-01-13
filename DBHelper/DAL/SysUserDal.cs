@@ -114,6 +114,37 @@ namespace DAL
         }
         #endregion
 
+        #region 批量修改
+        /// <summary>
+        /// 批量修改
+        /// </summary>
+        public void Update(List<SysUser> list)
+        {
+            list.ForEach(item => item.UpdateTime = DateTime.Now);
+
+            using (var session = DBHelper.GetSession())
+            {
+                session.Update(list);
+            }
+        }
+        #endregion
+
+        #region 批量修改(异步)
+        /// <summary>
+        /// 批量修改
+        /// </summary>
+        public async Task UpdateAsync(List<SysUser> list)
+        {
+            list.ForEach(item => item.UpdateTime = DateTime.Now);
+
+            using (var session = await DBHelper.GetSessionAsync())
+            {
+                var task = session.UpdateAsync(list);
+                await task;
+            }
+        }
+        #endregion
+
         #region 删除
         /// <summary>
         /// 删除

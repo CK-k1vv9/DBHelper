@@ -96,6 +96,18 @@ public void Update(SysUser info)
 }
 ```
 
+### 批量修改
+
+```C#
+public void Update(List<SysUser> list)
+{
+    using (var session = DBHelper.GetSession())
+    {
+        session.Update(list);
+    }
+}
+```
+
 ### 删除
 
 

@@ -697,10 +697,10 @@ namespace DBUtil
         private void PrepareUpdateSql(object obj, object oldObj, ref StringBuilder strSql, ref DbParameter[] parameters, ref int savedCount)
         {
             Type type = obj.GetType();
-            strSql.Append(string.Format("update {0} ", GetTableName(type)));
 
+            List<DbParameter> paramList = new List<DbParameter>();
             PropertyInfoEx[] propertyInfoList = GetEntityProperties(type);
-            List<string> propertyNameList = new List<string>();
+            StringBuilder sbPros = new StringBuilder();
             foreach (PropertyInfoEx propertyInfoEx in propertyInfoList)
             {
                 PropertyInfo propertyInfo = propertyInfoEx.PropertyInfo;
@@ -711,38 +711,73 @@ namespace DBUtil
                     object val = propertyInfo.GetValue(obj, null);
                     if (!object.Equals(oldVal, val))
                     {
-                        propertyNameList.Add(propertyInfoEx.FieldName);
+                        sbPros.Append(string.Format(" {0}={1}{0},", propertyInfoEx.FieldName, _parameterMark));
+                        DbParameter param = _provider.GetDbParameter(_parameterMark + propertyInfoEx.FieldName, val == null ? DBNull.Value : val);
+                        paramList.Add(param);
                         savedCount++;
                     }
                 }
             }
 
+            strSql.Append(string.Format("update {0} ", GetTableName(type)));
             strSql.Append(string.Format(" set "));
-            parameters = new DbParameter[savedCount];
-            StringBuilder sbPros = new StringBuilder();
-            int k = 0;
-            for (int i = 0; i < propertyInfoList.Length && savedCount > 0; i++)
-            {
-                PropertyInfoEx propertyInfoEx = propertyInfoList[i];
-                PropertyInfo propertyInfo = propertyInfoEx.PropertyInfo;
-
-                if (propertyInfo.GetCustomAttributes(typeof(IsDBFieldAttribute), false).Length > 0)
-                {
-                    object oldVal = propertyInfo.GetValue(oldObj, null);
-                    object val = propertyInfo.GetValue(obj, null);
-                    if (!object.Equals(oldVal, val))
-                    {
-                        sbPros.Append(string.Format(" {0}={1}{0},", propertyInfoEx.FieldName, _parameterMark));
-                        DbParameter param = _provider.GetDbParameter(_parameterMark + propertyInfoEx.FieldName, val == null ? DBNull.Value : val);
-                        parameters[k++] = param;
-                    }
-                }
-            }
+            parameters = paramList.ToArray();
             if (sbPros.Length > 0)
             {
                 strSql.Append(sbPros.ToString(0, sbPros.Length - 1));
             }
             strSql.Append(string.Format(" where {0}", CreatePkCondition(obj.GetType(), obj)));
+        }
+
+        /// <summary>
+        /// 准备批量Update的SQL
+        /// </summary>
+        private void PrepareUpdateSql<T>(List<T> list, List<T> oldList, ref StringBuilder strSql, ref DbParameter[] parameters, ref int savedCount)
+        {
+            Type type = typeof(T);
+
+            List<DbParameter> paramList = new List<DbParameter>();
+            for (int n = 0; n < list.Count; n++)
+            {
+                T obj = list[n];
+                T oldObj = oldList[n];
+
+                int subSavedCount = 0;
+
+                PropertyInfoEx[] propertyInfoList = GetEntityProperties(type);
+                StringBuilder sbPros = new StringBuilder();
+                foreach (PropertyInfoEx propertyInfoEx in propertyInfoList)
+                {
+                    PropertyInfo propertyInfo = propertyInfoEx.PropertyInfo;
+
+                    if (propertyInfo.GetCustomAttributes(typeof(IsDBFieldAttribute), false).Length > 0)
+                    {
+                        object oldVal = propertyInfo.GetValue(oldObj, null);
+                        object val = propertyInfo.GetValue(obj, null);
+                        if (!object.Equals(oldVal, val))
+                        {
+                            sbPros.Append(string.Format(" {0}={1}{0}{2},", propertyInfoEx.FieldName, _parameterMark, n));
+                            DbParameter param = _provider.GetDbParameter(_parameterMark + propertyInfoEx.FieldName + n, val == null ? DBNull.Value : val);
+                            paramList.Add(param);
+                            subSavedCount++;
+                        }
+                    }
+                }
+
+                if (subSavedCount > 0)
+                {
+                    savedCount++;
+                    strSql.Append(string.Format("update {0} ", GetTableName(type)));
+                    strSql.Append(string.Format(" set "));
+                    if (sbPros.Length > 0)
+                    {
+                        strSql.Append(sbPros.ToString(0, sbPros.Length - 1));
+                    }
+                    strSql.Append(string.Format(" where {0}; ", CreatePkCondition(obj.GetType(), obj)));
+                }
+            }
+
+            parameters = paramList.ToArray();
         }
 
         /// <summary>
@@ -780,6 +815,76 @@ namespace DBUtil
             if (savedCount > 0)
             {
                 await ExecuteSqlAsync(strSql.ToString(), parameters);
+            }
+        }
+
+        /// <summary>
+        /// 批量修改
+        /// </summary>
+        public void Update<T>(List<T> list)
+        {
+            for (int i = 0; i < list.Count; i += 500)
+            {
+                List<T> subList = list.Skip(i).Take(500).ToList();
+
+                List<T> newList = new List<T>();
+                List<T> oldList = new List<T>();
+                for (int k = 0; k < subList.Count; k++)
+                {
+                    T obj = subList[k];
+                    object oldObj = Find(obj);
+
+                    if (oldObj == null) throw new Exception("无法获取到旧数据");
+
+                    newList.Add(obj);
+                    oldList.Add((T)oldObj);
+                }
+
+                StringBuilder strSql = new StringBuilder();
+                int savedCount = 0;
+                DbParameter[] parameters = null;
+
+                PrepareUpdateSql<T>(newList, oldList, ref strSql, ref parameters, ref savedCount);
+
+                if (savedCount > 0)
+                {
+                    ExecuteSql(strSql.ToString(), parameters);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 批量修改
+        /// </summary>
+        public async Task UpdateAsync<T>(List<T> list)
+        {
+            for (int i = 0; i < list.Count; i += 500)
+            {
+                List<T> subList = list.Skip(i).Take(500).ToList();
+
+                List<T> newList = new List<T>();
+                List<T> oldList = new List<T>();
+                for (int k = 0; k < subList.Count; k++)
+                {
+                    T obj = subList[k];
+                    object oldObj = Find(obj);
+
+                    if (oldObj == null) throw new Exception("无法获取到旧数据");
+
+                    newList.Add(obj);
+                    oldList.Add((T)oldObj);
+                }
+
+                StringBuilder strSql = new StringBuilder();
+                int savedCount = 0;
+                DbParameter[] parameters = null;
+
+                PrepareUpdateSql<T>(newList, oldList, ref strSql, ref parameters, ref savedCount);
+
+                if (savedCount > 0)
+                {
+                    await ExecuteSqlAsync(strSql.ToString(), parameters);
+                }
             }
         }
         #endregion
