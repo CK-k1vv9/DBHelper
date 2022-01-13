@@ -119,6 +119,15 @@ public void Delete(string id)
 }
 ```
 
+### 查件删除
+
+```C#
+using (var session = DBHelper.GetSession())
+{
+    session.DeleteByCondition<SysUser>(string.Format("id>=12"));
+}
+```
+
 ### 查询单个记录
 
 ```C#
@@ -128,6 +137,13 @@ public SysUser Get(string id)
     {
         return session.FindById<SysUser>(id);
     }
+}
+```
+
+```C#
+using (var session = DBHelper.GetSession())
+{
+    return session.FindBySql<SysUser>("select * from sys_user");
 }
 ```
 
