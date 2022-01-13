@@ -65,7 +65,7 @@ namespace DAL
 
             using (var session = DBHelper.GetSession())
             {
-                session.Insert<SysUser>(list);
+                session.Insert(list);
             }
         }
         #endregion
@@ -80,7 +80,7 @@ namespace DAL
 
             using (var session = await DBHelper.GetSessionAsync())
             {
-                await session.InsertAsync<SysUser>(list);
+                await session.InsertAsync(list);
             }
         }
         #endregion

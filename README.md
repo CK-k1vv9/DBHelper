@@ -75,11 +75,9 @@ public void Insert(SysUser info)
 ```C#
 public void Insert(List<SysUser> list)
 {
-    list.ForEach(item => item.CreateTime = DateTime.Now);
-
     using (var session = DBHelper.GetSession())
     {
-        session.Insert<SysUser>(list);
+        session.Insert(list);
     }
 }
 ```
