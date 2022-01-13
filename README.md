@@ -119,7 +119,7 @@ public void Delete(string id)
 }
 ```
 
-### 查件删除
+### 条件删除
 
 ```C#
 using (var session = DBHelper.GetSession())
