@@ -101,5 +101,42 @@ namespace DBHelperTest
         }
         #endregion
 
+        #region 测试批量添加用户
+        [TestMethod]
+        public void TestInsertUserList()
+        {
+            List<SysUser> userList = new List<SysUser>();
+            for (int i = 1; i <= 1000; i++)
+            {
+                SysUser user = new SysUser();
+                user.UserName = "testUser";
+                user.RealName = "测试插入用户";
+                user.Password = "123456";
+                user.CreateUserid = "1";
+                userList.Add(user);
+            }
+            m_SysUserDal.Insert(userList);
+        }
+        #endregion
+
+        #region 测试批量添加用户(异步)
+        [TestMethod]
+        public async Task TestInsertUserListAsync()
+        {
+            List<SysUser> userList = new List<SysUser>();
+            for (int i = 1; i <= 1000; i++)
+            {
+                SysUser user = new SysUser();
+                user.UserName = "testUser";
+                user.RealName = "测试插入用户";
+                user.Password = "123456";
+                user.CreateUserid = "1";
+                userList.Add(user);
+            }
+            var task = m_SysUserDal.InsertAsync(userList);
+            await task;
+        }
+        #endregion
+
     }
 }

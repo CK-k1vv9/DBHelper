@@ -70,6 +70,20 @@ public void Insert(SysUser info)
 }
 ```
 
+### 批量添加
+
+```C#
+public void Insert(List<SysUser> list)
+{
+    list.ForEach(item => item.CreateTime = DateTime.Now);
+
+    using (var session = DBHelper.GetSession())
+    {
+        session.Insert<SysUser>(list);
+    }
+}
+```
+
 ### 修改
 
 ```C#

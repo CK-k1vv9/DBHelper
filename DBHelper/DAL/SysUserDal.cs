@@ -55,6 +55,36 @@ namespace DAL
         }
         #endregion
 
+        #region 批量添加
+        /// <summary>
+        /// 批量添加
+        /// </summary>
+        public void Insert(List<SysUser> list)
+        {
+            list.ForEach(item => item.CreateTime = DateTime.Now);
+
+            using (var session = DBHelper.GetSession())
+            {
+                session.Insert<SysUser>(list);
+            }
+        }
+        #endregion
+
+        #region 批量添加(异步)
+        /// <summary>
+        /// 批量添加
+        /// </summary>
+        public async Task InsertAsync(List<SysUser> list)
+        {
+            list.ForEach(item => item.CreateTime = DateTime.Now);
+
+            using (var session = await DBHelper.GetSessionAsync())
+            {
+                await session.InsertAsync<SysUser>(list);
+            }
+        }
+        #endregion
+
         #region 修改
         /// <summary>
         /// 修改
