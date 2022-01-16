@@ -1,20 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Configuration;
-using System.Data;
-using System.Data.Common;
-using System.Data.Objects.DataClasses;
-using System.Data.OracleClient;
-using System.Data.SqlClient;
-using System.Data.SQLite;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using MySql.Data.MySqlClient;
-using System.Data.OleDb;
 using System.Threading.Tasks;
-using System.Reflection.Emit;
 
 namespace DBUtil
 {

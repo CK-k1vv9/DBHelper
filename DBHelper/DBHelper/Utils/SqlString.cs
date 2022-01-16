@@ -1,16 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using MySql.Data.MySqlClient;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Data.OracleClient;
-using System.Data.SqlClient;
-using System.Data.SQLite;
-using System.Data.OleDb;
-using System.Configuration;
 
 namespace DBUtil
 {
