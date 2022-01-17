@@ -20,6 +20,7 @@ namespace PerformanceTest
         private BsOrderDal m_BsOrderDal = ServiceHelper.Get<BsOrderDal>();
         private SysUserDal m_SysUserDal = ServiceHelper.Get<SysUserDal>();
         private Random _rnd = new Random();
+        private int _count = 10000;
         #endregion
 
         public Form1()
@@ -124,7 +125,7 @@ namespace PerformanceTest
                 m_SysUserDal.Get("1"); //预热
 
                 List<SysUser> userList = new List<SysUser>();
-                for (int i = 1; i <= 1000; i++)
+                for (int i = 1; i <= _count; i++)
                 {
                     SysUser user = new SysUser();
                     user.UserName = "testUser";
@@ -177,7 +178,7 @@ namespace PerformanceTest
                 m_SysUserDal.Get("1"); //预热
 
                 List<SysUser> userList = new List<SysUser>();
-                for (int i = 1; i <= 1000; i++)
+                for (int i = 1; i <= _count; i++)
                 {
                     SysUser user = new SysUser();
                     user.UserName = "testUser";
@@ -237,7 +238,7 @@ namespace PerformanceTest
             {
                 m_SysUserDal.Get("1"); //预热
 
-                Log("查询 开始");
+                Log("分页查询 开始");
                 DateTime dt = DateTime.Now;
 
                 for (int i = 0; i < 10; i++)
@@ -261,12 +262,12 @@ namespace PerformanceTest
 
                             userList.AddRange(session.FindPageBySql<SysUser>(sql.SQL, orderBy, pageSize, page, sql.Params).Result as List<SysUser>);
                         }
-                        Log("查询结果 count=" + userList.Count.ToString());
+                        Log("分页查询结果 count=" + userList.Count.ToString());
                     }
                 }
 
                 string time = DateTime.Now.Subtract(dt).TotalSeconds.ToString("0.000");
-                Log("查询 完成，耗时：" + time + "秒");
+                Log("分页查询 完成，耗时：" + time + "秒");
             });
         }
         #endregion
