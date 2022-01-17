@@ -1,6 +1,6 @@
 循环添加修改 DBHelper和SqlSugar 性能差不多
-批量添加 SqlSugar比DBHelper 大约快4倍
-批量修改 SqlSugar比DBHelper 大约快12倍，一个数量级的差距
+批量添加 SqlSugar比DBHelper 大约快3倍
+批量修改 SqlSugar比DBHelper 大约快4倍
 查询 SqlSugar比DBHelper 大约快90%
 分页查询 SqlSugar比DBHelper 大约快30%
 
