@@ -220,7 +220,9 @@ namespace PerformanceTest
                             where t.id > @id 
                             and t.real_name like concat('%',@remark,'%')", 20, "测试");
 
-                        List<SysUser> userList = session.FindListBySql<SysUser>(sql.SQL, sql.Params);
+                        string orderBy = " order by t.create_time desc, t.id asc";
+
+                        List<SysUser> userList = session.FindListBySql<SysUser>(sql.SQL + orderBy, sql.Params);
                         Log("查询结果 count=" + userList.Count.ToString());
                     }
                 }
