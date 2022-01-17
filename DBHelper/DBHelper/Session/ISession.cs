@@ -39,6 +39,8 @@ namespace DBUtil
         /// <returns>影响的记录数</returns>
         Task<int> ExecuteSqlAsync(string sqlString);
 
+        object GetSingle(string sqlString);
+
         #endregion
 
         #region 执行带参数的SQL语句

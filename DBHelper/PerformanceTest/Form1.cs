@@ -1,4 +1,5 @@
 ﻿using DAL;
+using DBUtil;
 using Models;
 using System;
 using System.Collections.Generic;
@@ -53,10 +54,34 @@ namespace PerformanceTest
         }
         #endregion
 
+        #region 清空输出框
+        private void button10_Click(object sender, EventArgs e)
+        {
+            textBox1.Text = string.Empty;
+        }
+        #endregion
+
+        #region RunTask
+        private void RunTask(Action action)
+        {
+            Task.Run(() =>
+            {
+                try
+                {
+                    action();
+                }
+                catch (Exception ex)
+                {
+                    Log(ex.Message + "\r\n" + ex.StackTrace);
+                }
+            });
+        }
+        #endregion
+
         #region 删除
         private void button5_Click(object sender, EventArgs e)
         {
-            Task.Run(() =>
+            RunTask(() =>
             {
                 Log("删除 开始");
                 using (var session = DBHelper.GetSession())
@@ -71,7 +96,7 @@ namespace PerformanceTest
         #region 测试批量修改
         private void button3_Click(object sender, EventArgs e)
         {
-            Task.Run(() =>
+            RunTask(() =>
             {
                 List<SysUser> userList = m_SysUserDal.GetList("select t.* from sys_user t where t.id > 20");
 
@@ -94,7 +119,7 @@ namespace PerformanceTest
         #region 测试批量添加
         private void button4_Click(object sender, EventArgs e)
         {
-            Task.Run(() =>
+            RunTask(() =>
             {
                 m_SysUserDal.Get("1"); //预热
 
@@ -121,7 +146,7 @@ namespace PerformanceTest
         #region 测试循环修改
         private void button7_Click(object sender, EventArgs e)
         {
-            Task.Run(() =>
+            RunTask(() =>
             {
                 List<SysUser> userList = m_SysUserDal.GetList("select t.* from sys_user t where t.id > 20");
 
@@ -147,7 +172,7 @@ namespace PerformanceTest
         #region 测试循环添加
         private void button6_Click(object sender, EventArgs e)
         {
-            Task.Run(() =>
+            RunTask(() =>
             {
                 m_SysUserDal.Get("1"); //预热
 
@@ -170,6 +195,78 @@ namespace PerformanceTest
                 }
                 string time = DateTime.Now.Subtract(dt).TotalSeconds.ToString("0.000");
                 Log("循环添加 完成，耗时：" + time + "秒");
+            });
+        }
+        #endregion
+
+        #region 查询
+        private void button1_Click(object sender, EventArgs e)
+        {
+            RunTask(() =>
+            {
+                m_SysUserDal.Get("1"); //预热
+
+                Log("查询 开始");
+                DateTime dt = DateTime.Now;
+
+                for (int i = 0; i < 10; i++)
+                {
+                    using (var session = DBHelper.GetSession())
+                    {
+                        SqlString sql = new SqlString(session.Provider, @"
+                            select t.* 
+                            from sys_user t 
+                            where t.id > @id 
+                            and t.real_name like concat('%',@remark,'%')", 20, "测试");
+
+                        List<SysUser> userList = session.FindListBySql<SysUser>(sql.SQL, sql.Params);
+                        Log("查询结果 count=" + userList.Count.ToString());
+                    }
+                }
+
+                string time = DateTime.Now.Subtract(dt).TotalSeconds.ToString("0.000");
+                Log("查询 完成，耗时：" + time + "秒");
+            });
+        }
+        #endregion
+
+        #region 分页查询
+        private void button2_Click(object sender, EventArgs e)
+        {
+            RunTask(() =>
+            {
+                m_SysUserDal.Get("1"); //预热
+
+                Log("查询 开始");
+                DateTime dt = DateTime.Now;
+
+                for (int i = 0; i < 10; i++)
+                {
+                    int total = m_SysUserDal.GetTotalCount();
+                    int pageSize = 100;
+                    int pageCount = (total - 1) / pageSize + 1;
+                    using (var session = DBHelper.GetSession())
+                    {
+                        List<SysUser> userList = new List<SysUser>();
+                        for (int page = 1; page <= pageCount; page++)
+                        {
+                            SqlString sql = new SqlString(session.Provider, @"
+                                select t.* 
+                                from sys_user t 
+                                where 1=1 
+                                and t.id > @id 
+                                and t.real_name like concat('%',@remark,'%')", 20, "测试");
+
+                            string orderBy = " order by t.create_time desc, t.id asc";
+
+                            userList.AddRange(session.FindPageBySql<SysUser>(sql.SQL, orderBy, pageSize, page, sql.Params).Result as List<SysUser>);
+                        }
+                        Log("查询结果 count=" + userList.Count.ToString());
+                    }
+                }
+
+                string time = DateTime.Now.Subtract(dt).TotalSeconds.ToString("0.000");
+                Log("查询 完成，耗时：" + time + "秒");
             });
         }
         #endregion

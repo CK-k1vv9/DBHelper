@@ -34,6 +34,9 @@
             this.button4 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button10 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button6
@@ -95,11 +98,44 @@
             this.textBox1.Size = new System.Drawing.Size(638, 499);
             this.textBox1.TabIndex = 21;
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(12, 197);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(91, 23);
+            this.button1.TabIndex = 22;
+            this.button1.Text = "查询";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(12, 234);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(91, 23);
+            this.button2.TabIndex = 23;
+            this.button2.Text = "分页查询";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // button10
+            // 
+            this.button10.Location = new System.Drawing.Point(12, 488);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(91, 23);
+            this.button10.TabIndex = 27;
+            this.button10.Text = "清空输出框";
+            this.button10.UseVisualStyleBackColor = true;
+            this.button10.Click += new System.EventHandler(this.button10_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(767, 525);
+            this.Controls.Add(this.button10);
+            this.Controls.Add(this.button2);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.button6);
             this.Controls.Add(this.button7);
@@ -123,6 +159,9 @@
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button10;
     }
 }
 

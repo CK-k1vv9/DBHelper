@@ -27,6 +27,19 @@ namespace DAL
         }
         #endregion
 
+        #region 查询总数
+        /// <summary>
+        /// 根据ID查询单个记录
+        /// </summary>
+        public int GetTotalCount()
+        {
+            using (var session = DBHelper.GetSession())
+            {
+                return int.Parse(session.GetSingle("select count(*) from sys_user").ToString());
+            }
+        }
+        #endregion
+
         #region 查询集合
         /// <summary>
         /// 查询集合
