@@ -106,53 +106,5 @@ namespace DBHelperTest
         }
         #endregion
 
-        #region 测试批量修改用户
-        [TestMethod]
-        public void TestUpdateUserList()
-        {
-            List<SysUser> userList = new List<SysUser>();
-            foreach (string userId in new string[] { "10", "11" })
-            {
-                SysUser user = m_SysUserDal.Get(userId);
-                if (user != null)
-                {
-                    userList.Add(user);
-                }
-            }
-
-            foreach (SysUser user in userList)
-            {
-                user.UpdateUserid = "1";
-                user.Remark = "测试修改用户" + _rnd.Next(1, 100);
-            }
-
-            m_SysUserDal.Update(userList);
-        }
-        #endregion
-
-        #region 测试批量修改用户(异步)
-        [TestMethod]
-        public async Task TestUpdateUserListAsync()
-        {
-            List<SysUser> userList = new List<SysUser>();
-            foreach (string userId in new string[] { "10", "11" })
-            {
-                SysUser user = m_SysUserDal.Get(userId);
-                if (user != null)
-                {
-                    userList.Add(user);
-                }
-            }
-
-            foreach (SysUser user in userList)
-            {
-                user.UpdateUserid = "1";
-                user.Remark = "测试修改用户" + _rnd.Next(1, 100);
-            }
-
-            await m_SysUserDal.UpdateAsync(userList);
-        }
-        #endregion
-
     }
 }

@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBHelperTestWinform", "DBHe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils", "Utils\Utils.csproj", "{20E235E1-B6F1-4697-A247-982FA2E585AA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerformanceTest", "PerformanceTest\PerformanceTest.csproj", "{90B7B563-8A78-4B8E-9EE5-65E16EC88898}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{20E235E1-B6F1-4697-A247-982FA2E585AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20E235E1-B6F1-4697-A247-982FA2E585AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20E235E1-B6F1-4697-A247-982FA2E585AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90B7B563-8A78-4B8E-9EE5-65E16EC88898}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90B7B563-8A78-4B8E-9EE5-65E16EC88898}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90B7B563-8A78-4B8E-9EE5-65E16EC88898}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90B7B563-8A78-4B8E-9EE5-65E16EC88898}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

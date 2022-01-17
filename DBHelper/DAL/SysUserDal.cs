@@ -27,6 +27,19 @@ namespace DAL
         }
         #endregion
 
+        #region 查询集合
+        /// <summary>
+        /// 查询集合
+        /// </summary>
+        public List<SysUser> GetList(string sql)
+        {
+            using (var session = DBHelper.GetSession())
+            {
+                return session.FindListBySql<SysUser>(sql);
+            }
+        }
+        #endregion
+
         #region 添加
         /// <summary>
         /// 添加

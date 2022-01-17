@@ -53,6 +53,8 @@
   <ItemGroup>
     <Compile Include="AsyncSyncTest.cs" />
     <Compile Include="AsyncTest.cs" />
+    <Compile Include="BatchInsertTest.cs" />
+    <Compile Include="BatchUpdateTest.cs" />
     <Compile Include="DeleteTest.cs" />
     <Compile Include="InsertTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
