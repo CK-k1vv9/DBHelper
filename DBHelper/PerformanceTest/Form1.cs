@@ -160,9 +160,22 @@ namespace PerformanceTest
 
                 Log("循环修改 开始 count=" + userList.Count);
                 DateTime dt = DateTime.Now;
-                foreach (SysUser user in userList)
+                using (var session = DBHelper.GetSession())
                 {
-                    m_SysUserDal.Update(user);
+                    try
+                    {
+                        session.BeginTransaction();
+                        foreach (SysUser user in userList)
+                        {
+                            session.Update(user);
+                        }
+                        session.CommitTransaction();
+                    }
+                    catch (Exception ex)
+                    {
+                        session.RollbackTransaction();
+                        throw ex;
+                    }
                 }
                 string time = DateTime.Now.Subtract(dt).TotalSeconds.ToString("0.000");
                 Log("循环修改 完成，耗时：" + time + "秒");
@@ -190,9 +203,22 @@ namespace PerformanceTest
 
                 Log("循环添加 开始 count=" + userList.Count);
                 DateTime dt = DateTime.Now;
-                foreach (SysUser user in userList)
+                using (var session = DBHelper.GetSession())
                 {
-                    m_SysUserDal.Insert(user);
+                    try
+                    {
+                        session.BeginTransaction();
+                        foreach (SysUser user in userList)
+                        {
+                            session.Insert(user);
+                        }
+                        session.CommitTransaction();
+                    }
+                    catch (Exception ex)
+                    {
+                        session.RollbackTransaction();
+                        throw ex;
+                    }
                 }
                 string time = DateTime.Now.Subtract(dt).TotalSeconds.ToString("0.000");
                 Log("循环添加 完成，耗时：" + time + "秒");

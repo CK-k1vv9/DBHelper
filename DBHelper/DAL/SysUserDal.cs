@@ -91,7 +91,17 @@ namespace DAL
 
             using (var session = DBHelper.GetSession())
             {
-                session.Insert(list);
+                try
+                {
+                    session.BeginTransaction();
+                    session.Insert(list);
+                    session.CommitTransaction();
+                }
+                catch (Exception ex)
+                {
+                    session.RollbackTransaction();
+                    throw ex;
+                }
             }
         }
         #endregion
@@ -150,7 +160,17 @@ namespace DAL
 
             using (var session = DBHelper.GetSession())
             {
-                session.Update(list);
+                try
+                {
+                    session.BeginTransaction();
+                    session.Update(list);
+                    session.CommitTransaction();
+                }
+                catch (Exception ex)
+                {
+                    session.RollbackTransaction();
+                    throw ex;
+                }
             }
         }
         #endregion
