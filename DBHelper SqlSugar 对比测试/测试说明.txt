@@ -1,0 +1,14 @@
+循环添加修改 DBHelper和SqlSugar 性能差不多
+批量添加 SqlSugar比DBHelper 大约快4倍
+批量修改 SqlSugar比DBHelper 大约快12倍，一个数量级的差距
+查询 SqlSugar比DBHelper 大约快2倍
+分页查询 SqlSugar比DBHelper 大约快3倍
+
+
+SqlSugar比DBHelper性能好
+批量添加性能好的原因：使用了BulkCopy
+批量修改性能好的原因：使用了update inner join批量更新
+查询性能好的原因：DBHelper通过反射实现，SqlSugar使用了Emit技术
+
+
+
