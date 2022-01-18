@@ -20,7 +20,14 @@ namespace DBHelperTest
         [TestMethod]
         public void TestDeleteUser()
         {
-            m_SysUserDal.Delete("13");
+            SysUser user = new SysUser();
+            user.UserName = "testUser";
+            user.RealName = "测试插入用户";
+            user.Password = "123456";
+            user.CreateUserid = "1";
+            long id = m_SysUserDal.Insert(user);
+
+            m_SysUserDal.Delete(id);
         }
         #endregion
 

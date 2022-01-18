@@ -197,7 +197,7 @@ namespace DAL
         /// <summary>
         /// 删除
         /// </summary>
-        public void Delete(string id)
+        public void Delete(long id)
         {
             using (var session = DBHelper.GetSession())
             {
