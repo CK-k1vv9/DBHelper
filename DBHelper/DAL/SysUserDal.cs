@@ -57,12 +57,14 @@ namespace DAL
         /// <summary>
         /// 添加
         /// </summary>
-        public void Insert(SysUser info)
+        public long Insert(SysUser info)
         {
             using (var session = DBHelper.GetSession())
             {
                 info.CreateTime = DateTime.Now;
                 session.Insert(info);
+                long id = Convert.ToInt64(session.GetSingle("select @@IDENTITY"));
+                return id;
             }
         }
         #endregion

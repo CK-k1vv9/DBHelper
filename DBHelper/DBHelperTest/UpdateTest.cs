@@ -24,7 +24,7 @@ namespace DBHelperTest
         {
             string userId = "10";
 
-            BsOrder order = m_BsOrderDal.Get("991de30a46ad4599919b56d1a13d100c");
+            BsOrder order = m_BsOrderDal.GetFirst();
             order.Remark = "订单已修改";
             order.UpdateUserid = userId;
 

@@ -234,6 +234,32 @@ namespace DAL
         }
         #endregion
 
+        #region 查询第一条记录
+        /// <summary>
+        /// 查询集合
+        /// </summary>
+        public BsOrder GetFirst()
+        {
+            using (var session = DBHelper.GetSession())
+            {
+                var list = session.FindListBySql<BsOrder>("select * from bs_order");
+                if (list.Count > 0)
+                {
+                    BsOrder result = list[0];
+
+                    List<BsOrderDetail> detailList = ServiceHelper.Get<BsOrderDetailDal>().GetListByOrderId(result.Id);
+                    result.DetailList = detailList;
+
+                    return result;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+        #endregion
+
         #region 查询集合
         /// <summary>
         /// 查询集合
