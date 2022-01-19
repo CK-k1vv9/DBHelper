@@ -66,7 +66,10 @@ public class DBHelper
 
 1. 实体类放在Models文件夹中
 2. 扩展实体类放在ExtModels文件夹中
-3. 如果需要添加自定义属性，请修改ExtModels，不要修改Models
+3. 实体类和扩展实体类使用partial修饰，实际上是一个类，放在不同的文件中
+4. 如果需要添加自定义属性，请修改ExtModels，不要修改Models
+
+#### 实体类示例
 
 ```C#
 /// <summary>
@@ -146,6 +149,8 @@ public partial class BsOrder
 1. 修改扩展实体类，添加自定义属性
 2. 下面的扩展实体类中，查询时OrderUserRealName会被自动填充，查询SQL：select t.*, u.real_name as OrderUserRealName from ......
 3. DetailList不会被自动填充，需要手动查询
+
+#### 扩展实体类示例
 
 ```C#
 /// <summary>
