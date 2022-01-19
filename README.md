@@ -62,6 +62,109 @@ public class DBHelper
 }
 ```
 
+### 使用Model生成器生成实体类
+
+1. 实体类放在Models文件夹中
+2. 扩展实体类放在ExtModels文件夹中
+3. 如果需要添加自定义属性，请修改ExtModels，不要修改Models
+
+```C#
+/// <summary>
+/// 订单表
+/// </summary>
+[Serializable]
+[DBTable("bs_order")]
+public partial class BsOrder
+{
+
+    /// <summary>
+    /// 主键
+    /// </summary>
+    [IsId]
+    [IsDBField]
+    public string Id { get; set; }
+
+    /// <summary>
+    /// 订单时间
+    /// </summary>
+    [IsDBField("order_time")]
+    public DateTime OrderTime { get; set; }
+
+    /// <summary>
+    /// 订单金额
+    /// </summary>
+    [IsDBField]
+    public decimal? Amount { get; set; }
+
+    /// <summary>
+    /// 下单用户
+    /// </summary>
+    [IsDBField("order_userid")]
+    public long OrderUserid { get; set; }
+
+    /// <summary>
+    /// 订单状态(0草稿 1已下单 2已付款 3已发货 4完成)
+    /// </summary>
+    [IsDBField]
+    public int Status { get; set; }
+
+    /// <summary>
+    /// 备注
+    /// </summary>
+    [IsDBField]
+    public string Remark { get; set; }
+
+    /// <summary>
+    /// 创建者ID
+    /// </summary>
+    [IsDBField("create_userid")]
+    public string CreateUserid { get; set; }
+
+    /// <summary>
+    /// 创建时间
+    /// </summary>
+    [IsDBField("create_time")]
+    public DateTime CreateTime { get; set; }
+
+    /// <summary>
+    /// 更新者ID
+    /// </summary>
+    [IsDBField("update_userid")]
+    public string UpdateUserid { get; set; }
+
+    /// <summary>
+    /// 更新时间
+    /// </summary>
+    [IsDBField("update_time")]
+    public DateTime? UpdateTime { get; set; }
+
+}
+```
+
+### 修改扩展实体类
+
+1. 修改扩展实体类，添加自定义属性
+2. 下面的扩展实体类中，查询时OrderUserRealName会被自动填充，查询SQL：select t.*, u.real_name as OrderUserRealName from ......
+3. DetailList不会被自动填充，需要手动查询
+
+```C#
+/// <summary>
+/// 订单表
+/// </summary>
+public partial class BsOrder
+{
+    /// <summary>
+    /// 订单明细集合
+    /// </summary>
+    public List<BsOrderDetail> DetailList { get; set; }
+
+    /// <summary>
+    /// 下单用户姓名
+    /// </summary>
+    public string OrderUserRealName { get; set; }
+}
+```
+
 ### 添加
 
 ```C#
