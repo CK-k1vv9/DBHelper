@@ -18,20 +18,17 @@ namespace DBHelperTest
     {
         #region 变量
         private BsOrderDal m_BsOrderDal = ServiceHelper.Get<BsOrderDal>();
-        private int _n = 500;
-        private int _pageSize = 50;
+        private int _n = 100;
+        private int _pageSize = 20;
         #endregion
 
         #region 构造函数
         public AsyncSyncTest()
         {
             ThreadPool.SetMaxThreads(1000, 1000);
-            ThreadPool.SetMinThreads(500, 500);
+            ThreadPool.SetMinThreads(200, 200);
 
-            PagerModel pagerModel = new PagerModel();
-            pagerModel.CurrentPage = 1;
-            pagerModel.PageSize = 10;
-            m_BsOrderDal.GetListPage(ref pagerModel, 0, null, DateTime.MinValue, DateTime.Now.AddDays(1));
+            m_BsOrderDal.Preheat();
         }
         #endregion
 
@@ -42,21 +39,31 @@ namespace DBHelperTest
             List<Task> taskList = new List<Task>();
             for (int i = 0; i < _n; i++)
             {
-                var tsk = Task.Run(() =>
+                var tsk = Task.Factory.StartNew((obj) =>
                 {
                     try
                     {
                         PagerModel pagerModel = new PagerModel();
                         pagerModel.CurrentPage = 1;
                         pagerModel.PageSize = _pageSize;
+
                         var task = m_BsOrderDal.GetListPage(ref pagerModel, 0, null, DateTime.MinValue, DateTime.Now.AddDays(1));
+
                         List<BsOrder> list = pagerModel.Result as List<BsOrder>;
+
+                        if ((int)obj == 0)
+                        {
+                            foreach (BsOrder item in list)
+                            {
+                                Console.WriteLine(ModelToStringUtil.ToString(item));
+                            }
+                        }
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine(ex.Message + "\r\n" + ex.StackTrace);
                     }
-                });
+                }, i);
                 taskList.Add(tsk);
             }
             Task.WaitAll(taskList.ToArray());
@@ -74,8 +81,18 @@ namespace DBHelperTest
                     PagerModel pagerModel = new PagerModel();
                     pagerModel.CurrentPage = 1;
                     pagerModel.PageSize = _pageSize;
+
                     var result = await m_BsOrderDal.GetListPageAsync(pagerModel, 0, null, DateTime.MinValue, DateTime.Now.AddDays(1));
+
                     List<BsOrder> list = result.Result as List<BsOrder>;
+
+                    if (i == 0)
+                    {
+                        foreach (BsOrder item in list)
+                        {
+                            Console.WriteLine(ModelToStringUtil.ToString(item));
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {

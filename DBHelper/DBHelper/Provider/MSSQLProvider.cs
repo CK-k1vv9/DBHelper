@@ -87,18 +87,34 @@ namespace DBUtil
         }
         #endregion
 
-        #region 创建 Like SQL
-        public ResolveLikeModel ResolveLike(string value)
+        #region ForContains
+        public SqlValue ForContains(string value)
         {
-            //todo:ResolveLike
+            //todo:ForContains
             throw new NotImplementedException();
         }
         #endregion
 
-        #region 创建 字符串转数据库日期时间类型 SQL
-        public ResolveDateTimeModel ResolveDateTime(string value, string format)
+        #region ForStartsWith
+        public SqlValue ForStartsWith(string value)
         {
-            //todo:ResolveDateTime
+            //todo:ForStartsWith
+            throw new NotImplementedException();
+        }
+        #endregion
+
+        #region ForEndsWith
+        public SqlValue ForEndsWith(string value)
+        {
+            //todo:ForEndsWith
+            throw new NotImplementedException();
+        }
+        #endregion
+
+        #region ForDateTime
+        public SqlValue ForDateTime(DateTime dateTime)
+        {
+            //todo:ForDateTime
             throw new NotImplementedException();
         }
         #endregion

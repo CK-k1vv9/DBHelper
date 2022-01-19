@@ -23,15 +23,23 @@ namespace PerformanceTest
         private int _count = 10000;
         #endregion
 
+        #region Form1
         public Form1()
         {
             InitializeComponent();
         }
+        #endregion
 
+        #region Form1_Load
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            RunTask(() =>
+            {
+                m_BsOrderDal.Preheat(); //预热
+                Log("预热完成");
+            });
         }
+        #endregion
 
         #region Log
         private void Log(string log)
@@ -110,7 +118,9 @@ namespace PerformanceTest
 
                 Log("批量修改 开始 count=" + userList.Count);
                 DateTime dt = DateTime.Now;
+
                 m_SysUserDal.Update(userList);
+
                 string time = DateTime.Now.Subtract(dt).TotalSeconds.ToString("0.000");
                 Log("批量修改 完成，耗时：" + time + "秒");
             });
@@ -122,8 +132,6 @@ namespace PerformanceTest
         {
             RunTask(() =>
             {
-                m_SysUserDal.Get("1"); //预热
-
                 List<SysUser> userList = new List<SysUser>();
                 for (int i = 1; i <= _count; i++)
                 {
@@ -137,7 +145,9 @@ namespace PerformanceTest
 
                 Log("批量添加 开始 count=" + userList.Count);
                 DateTime dt = DateTime.Now;
+
                 m_SysUserDal.Insert(userList);
+
                 string time = DateTime.Now.Subtract(dt).TotalSeconds.ToString("0.000");
                 Log("批量添加 完成，耗时：" + time + "秒");
             });
@@ -160,6 +170,7 @@ namespace PerformanceTest
 
                 Log("循环修改 开始 count=" + userList.Count);
                 DateTime dt = DateTime.Now;
+
                 using (var session = DBHelper.GetSession())
                 {
                     try
@@ -177,6 +188,7 @@ namespace PerformanceTest
                         throw ex;
                     }
                 }
+
                 string time = DateTime.Now.Subtract(dt).TotalSeconds.ToString("0.000");
                 Log("循环修改 完成，耗时：" + time + "秒");
             });
@@ -188,8 +200,6 @@ namespace PerformanceTest
         {
             RunTask(() =>
             {
-                m_SysUserDal.Get("1"); //预热
-
                 List<SysUser> userList = new List<SysUser>();
                 for (int i = 1; i <= _count; i++)
                 {
@@ -203,6 +213,7 @@ namespace PerformanceTest
 
                 Log("循环添加 开始 count=" + userList.Count);
                 DateTime dt = DateTime.Now;
+
                 using (var session = DBHelper.GetSession())
                 {
                     try
@@ -220,6 +231,7 @@ namespace PerformanceTest
                         throw ex;
                     }
                 }
+
                 string time = DateTime.Now.Subtract(dt).TotalSeconds.ToString("0.000");
                 Log("循环添加 完成，耗时：" + time + "秒");
             });
@@ -231,8 +243,6 @@ namespace PerformanceTest
         {
             RunTask(() =>
             {
-                m_SysUserDal.Get("1"); //预热
-
                 Log("查询 开始");
                 DateTime dt = DateTime.Now;
 
@@ -264,8 +274,6 @@ namespace PerformanceTest
         {
             RunTask(() =>
             {
-                m_SysUserDal.Get("1"); //预热
-
                 Log("分页查询 开始");
                 DateTime dt = DateTime.Now;
 

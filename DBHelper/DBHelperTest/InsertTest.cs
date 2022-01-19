@@ -17,6 +17,13 @@ namespace DBHelperTest
         private SysUserDal m_SysUserDal = ServiceHelper.Get<SysUserDal>();
         #endregion
 
+        #region 构造函数
+        public InsertTest()
+        {
+            m_BsOrderDal.Preheat();
+        }
+        #endregion
+
         #region 测试添加订单
         [TestMethod]
         public void TestInsertOrder()
@@ -83,7 +90,9 @@ namespace DBHelperTest
             user.RealName = "测试插入用户";
             user.Password = "123456";
             user.CreateUserid = "1";
-            m_SysUserDal.Insert(user);
+
+            user.Id = m_SysUserDal.Insert(user);
+            Console.WriteLine("user.Id=" + user.Id);
         }
         #endregion
 
@@ -96,6 +105,7 @@ namespace DBHelperTest
             user.RealName = "测试插入用户";
             user.Password = "123456";
             user.CreateUserid = "1";
+
             var task = m_SysUserDal.InsertAsync(user);
             await task;
         }

@@ -18,7 +18,7 @@ namespace DAL
         /// <summary>
         /// 根据ID查询单个记录
         /// </summary>
-        public SysUser Get(string id)
+        public SysUser Get(long id)
         {
             using (var session = DBHelper.GetSession())
             {

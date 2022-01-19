@@ -14,6 +14,19 @@ namespace DAL
     /// </summary>
     public class BsOrderDal
     {
+        #region 预热
+        /// <summary>
+        /// 预热
+        /// </summary>
+        public void Preheat()
+        {
+            using (var session = DBHelper.GetSession())
+            {
+                session.GetSingle("select count(*) from bs_order");
+            }
+        }
+        #endregion
+
         #region 添加
         /// <summary>
         /// 添加
@@ -274,12 +287,7 @@ namespace DAL
                     select t.*, u.real_name as OrderUserRealName
                     from bs_order t
                     left join sys_user u on t.order_userid=u.id
-                    where 1=1
-                    and (t.remark like @remark1 or t.remark like @remark2)
-                    and t.order_time >= @startTime
-                    and t.order_time <= @endTime ",
-                    sql.ResolveLike("test2"), sql.ResolveLike("test3"),
-                    sql.ResolveDateTime(startTime.Value.ToString("yyyy-MM-dd HH:mm:ss")), sql.ResolveDateTime(endTime.Value.ToString("yyyy-MM-dd HH:mm:ss")));
+                    where 1=1");
 
                 if (status != null)
                 {
@@ -288,17 +296,17 @@ namespace DAL
 
                 if (!string.IsNullOrWhiteSpace(remark))
                 {
-                    //sql.AppendSql(" and t.remark like @remark", sql.ResolveLike(remark));
+                    sql.AppendSql(" and t.remark like concat('%',@remark,'%')", remark);
                 }
 
                 if (startTime != null)
                 {
-                    //sql.AppendSql(" and t.order_time >= @startTime ", sql.ResolveDateTime(startTime.Value.ToString("yyyy-MM-dd HH:mm:ss")));
+                    sql.AppendSql(" and t.order_time>=STR_TO_DATE(@startTime, '%Y-%m-%d %H:%i:%s') ", startTime.Value.ToString("yyyy-MM-dd HH:mm:ss"));
                 }
 
                 if (endTime != null)
                 {
-                    //sql.AppendSql(" and t.order_time <= @endTime ", sql.ResolveDateTime(endTime.Value.ToString("yyyy-MM-dd HH:mm:ss")));
+                    sql.AppendSql(" and t.order_time<=STR_TO_DATE(@endTime, '%Y-%m-%d %H:%i:%s') ", endTime.Value.ToString("yyyy-MM-dd HH:mm:ss"));
                 }
 
                 sql.AppendSql(" order by t.order_time desc, t.id asc ");
@@ -330,7 +338,7 @@ namespace DAL
 
                 if (!string.IsNullOrWhiteSpace(remark))
                 {
-                    sql.AppendSql(" and t.remark like @remark", sql.ResolveLike(remark));
+                    sql.AppendSql(" and t.remark like concat('%',@remark,'%')", remark);
                 }
 
                 if (startTime != null)
@@ -429,6 +437,50 @@ namespace DAL
                 string orderby = " order by t.order_time desc, t.id asc ";
                 pager = await session.FindPageBySqlAsync<BsOrder>(sql.SQL, orderby, pager.PageSize, pager.CurrentPage, sql.Params);
                 return pager;
+            }
+        }
+        #endregion
+
+        #region 查询集合(使用 ForContains、ForStartsWith、ForEndsWith、ForDateTime 等辅助方法)
+        /// <summary>
+        /// 查询集合
+        /// </summary>
+        public List<BsOrder> GetListExt(int? status, string remark, DateTime? startTime, DateTime? endTime)
+        {
+            using (var session = DBHelper.GetSession())
+            {
+                SqlString sql = new SqlString(session.Provider);
+
+                sql.AppendSql(@"
+                    select t.*, u.real_name as OrderUserRealName
+                    from bs_order t
+                    left join sys_user u on t.order_userid=u.id
+                    where 1=1");
+
+                if (status != null)
+                {
+                    sql.AppendSql(" and t.status=@status", status);
+                }
+
+                if (!string.IsNullOrWhiteSpace(remark))
+                {
+                    sql.AppendSql(" and t.remark like @remark", sql.ForContains(remark));
+                }
+
+                if (startTime != null)
+                {
+                    sql.AppendSql(" and t.order_time >= @startTime ", sql.ForDateTime(startTime.Value));
+                }
+
+                if (endTime != null)
+                {
+                    sql.AppendSql(" and t.order_time <= @endTime ", sql.ForDateTime(endTime.Value));
+                }
+
+                sql.AppendSql(" order by t.order_time desc, t.id asc ");
+
+                List<BsOrder> list = session.FindListBySql<BsOrder>(sql.SQL, sql.Params);
+                return list;
             }
         }
         #endregion

@@ -55,12 +55,22 @@ namespace DBUtil
         /// <summary>
         /// 创建 Like SQL
         /// </summary>
-        ResolveLikeModel ResolveLike(string value);
+        SqlValue ForContains(string value);
 
         /// <summary>
-        /// 创建 字符串转数据库日期时间类型 SQL
+        /// 创建 Like SQL
         /// </summary>
-        ResolveDateTimeModel ResolveDateTime(string value, string format);
+        SqlValue ForStartsWith(string value);
+
+        /// <summary>
+        /// 创建 Like SQL
+        /// </summary>
+        SqlValue ForEndsWith(string value);
+
+        /// <summary>
+        /// 创建 日期时间类型转换 SQL
+        /// </summary>
+        SqlValue ForDateTime(DateTime dateTime);
 
     }
 }

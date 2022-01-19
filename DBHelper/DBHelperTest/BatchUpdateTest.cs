@@ -19,6 +19,13 @@ namespace DBHelperTest
         private Random _rnd = new Random();
         #endregion
 
+        #region 构造函数
+        public BatchUpdateTest()
+        {
+            m_BsOrderDal.Preheat();
+        }
+        #endregion
+
         #region 测试批量修改用户
         [TestMethod]
         public void TestUpdateUserList()
@@ -34,7 +41,9 @@ namespace DBHelperTest
 
             Console.WriteLine("开始 count=" + userList.Count);
             DateTime dt = DateTime.Now;
+
             m_SysUserDal.Update(userList);
+
             string time = DateTime.Now.Subtract(dt).TotalSeconds.ToString("0.000");
             Console.WriteLine("结束，耗时：" + time + "秒");
         }
@@ -55,7 +64,9 @@ namespace DBHelperTest
 
             Console.WriteLine("开始 count=" + userList.Count);
             DateTime dt = DateTime.Now;
+
             await m_SysUserDal.UpdateAsync(userList);
+
             string time = DateTime.Now.Subtract(dt).TotalSeconds.ToString("0.000");
             Console.WriteLine("结束，耗时：" + time + "秒");
         }

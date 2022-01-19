@@ -18,11 +18,17 @@ namespace DBHelperTest
         private SysUserDal m_SysUserDal = ServiceHelper.Get<SysUserDal>();
         #endregion
 
+        #region 构造函数
+        public BatchInsertTest()
+        {
+            m_BsOrderDal.Preheat();
+        }
+        #endregion
+
         #region 测试批量添加用户
         [TestMethod]
         public void TestInsertUserList()
         {
-            m_SysUserDal.Get("1"); //预热
             List<SysUser> userList = new List<SysUser>();
             for (int i = 1; i <= 1000; i++)
             {
@@ -36,7 +42,9 @@ namespace DBHelperTest
 
             Console.WriteLine("开始 count=" + userList.Count);
             DateTime dt = DateTime.Now;
+
             m_SysUserDal.Insert(userList);
+
             string time = DateTime.Now.Subtract(dt).TotalSeconds.ToString("0.000");
             Console.WriteLine("结束，耗时：" + time + "秒");
         }
@@ -46,7 +54,6 @@ namespace DBHelperTest
         [TestMethod]
         public async Task TestInsertUserListAsync()
         {
-            m_SysUserDal.Get("1"); //预热
             List<SysUser> userList = new List<SysUser>();
             for (int i = 1; i <= 1000; i++)
             {
@@ -60,8 +67,10 @@ namespace DBHelperTest
 
             Console.WriteLine("开始 count=" + userList.Count);
             DateTime dt = DateTime.Now;
+
             var task = m_SysUserDal.InsertAsync(userList);
             await task;
+
             string time = DateTime.Now.Subtract(dt).TotalSeconds.ToString("0.000");
             Console.WriteLine("结束，耗时：" + time + "秒");
         }

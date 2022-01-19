@@ -16,6 +16,13 @@ namespace DBHelperTest
         private SysUserDal m_SysUserDal = ServiceHelper.Get<SysUserDal>();
         #endregion
 
+        #region 构造函数
+        public DeleteTest()
+        {
+            m_BsOrderDal.Preheat();
+        }
+        #endregion
+
         #region 测试删除用户
         [TestMethod]
         public void TestDeleteUser()
@@ -37,7 +44,19 @@ namespace DBHelperTest
         {
             using (var session = DBHelper.GetSession())
             {
-                session.DeleteByCondition<SysUser>(string.Format("id>=12"));
+                session.DeleteByCondition<SysUser>(string.Format("id>20"));
+            }
+        }
+        #endregion
+
+        #region 删除订单和订单明细
+        [TestMethod]
+        public void TestDeleteOrderByCondition()
+        {
+            using (var session = DBHelper.GetSession())
+            {
+                session.DeleteByCondition<BsOrder>(string.Format("id not like '10000_'"));
+                session.DeleteByCondition<BsOrderDetail>(string.Format("order_id not like '10000_'"));
             }
         }
         #endregion

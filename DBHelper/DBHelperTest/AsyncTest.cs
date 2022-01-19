@@ -17,11 +17,18 @@ namespace DBHelperTest
         private BsOrderDal m_BsOrderDal = ServiceHelper.Get<BsOrderDal>();
         #endregion
 
+        #region 构造函数
+        public AsyncTest()
+        {
+            m_BsOrderDal.Preheat();
+        }
+        #endregion
+
         #region 测试异步查询订单集合
         [TestMethod]
         public async Task TestQueryAsync()
         {
-            var task = m_BsOrderDal.GetListAsync(0, "test", DateTime.MinValue, DateTime.Now.AddDays(1));
+            var task = m_BsOrderDal.GetListAsync(0, "订单", DateTime.MinValue, DateTime.Now.AddDays(1));
             List<BsOrder> list = await task;
 
             foreach (BsOrder item in list)

@@ -90,21 +90,31 @@ namespace DBUtil
         }
         #endregion
 
-        #region 创建 Like SQL
-        public ResolveLikeModel ResolveLike(string value)
+        #region ForContains
+        public SqlValue ForContains(string value)
         {
-            return new ResolveLikeModel("concat('%',{0},'%')", value);
+            return new SqlValue("concat('%',{0},'%')", value);
         }
         #endregion
 
-        #region 创建 字符串转数据库日期时间类型 SQL
-        public ResolveDateTimeModel ResolveDateTime(string value, string format)
+        #region ForStartsWith
+        public SqlValue ForStartsWith(string value)
         {
-            if (string.IsNullOrWhiteSpace(format))
-            {
-                format = "%Y-%m-%d %H:%i:%s";
-            }
-            return new ResolveDateTimeModel("STR_TO_DATE({0}, '" + format + "')", value);
+            return new SqlValue("concat({0},'%')", value);
+        }
+        #endregion
+
+        #region ForEndsWith
+        public SqlValue ForEndsWith(string value)
+        {
+            return new SqlValue("concat('%',{0})", value);
+        }
+        #endregion
+
+        #region ForDateTime
+        public SqlValue ForDateTime(DateTime dateTime)
+        {
+            return new SqlValue("STR_TO_DATE({0}, '%Y-%m-%d %H:%i:%s')", dateTime.ToString("yyyy-MM-dd HH:mm:ss"));
         }
         #endregion
 

@@ -18,26 +18,40 @@ namespace DBHelperTest
         private Random _rnd = new Random();
         #endregion
 
+        #region 构造函数
+        public UpdateTest()
+        {
+            m_BsOrderDal.Preheat();
+        }
+        #endregion
+
         #region 测试修改订单
         [TestMethod]
         public void TestUpdateOrder()
         {
             string userId = "10";
 
-            BsOrder order = m_BsOrderDal.GetFirst();
-            order.Remark = "订单已修改";
+            BsOrder order = m_BsOrderDal.Get("100001");
+            if (order == null)
+            {
+                throw new Exception("测试数据被删除");
+            }
+
+            order.Remark = "订单已修改" + _rnd.Next(0, 100);
             order.UpdateUserid = userId;
 
             order.DetailList.Clear(); //删除全部明细
 
             //删除某条明细
-            //for (int i = order.DetailList.Count - 1; i >= 0; i--)
-            //{
-            //    if (order.DetailList[i].GOODS_NAME == "鼠标")
-            //    {
-            //        order.DetailList.RemoveAt(i);
-            //    }
-            //}
+            /*
+            for (int i = order.DetailList.Count - 1; i >= 0; i--)
+            {
+                if (order.DetailList[i].GOODS_NAME == "鼠标")
+                {
+                    order.DetailList.RemoveAt(i);
+                }
+            } 
+            */
 
             foreach (BsOrderDetail oldDetail in order.DetailList)
             {
@@ -70,7 +84,7 @@ namespace DBHelperTest
         [TestMethod]
         public void TestUpdateUser()
         {
-            string userId = "10";
+            long userId = 10;
             SysUser user = m_SysUserDal.Get(userId);
             if (user != null)
             {
@@ -81,7 +95,7 @@ namespace DBHelperTest
             }
             else
             {
-                Console.WriteLine("用户 ID=" + userId + " 不存在");
+                throw new Exception("测试数据被删除");
             }
         }
         #endregion
@@ -90,7 +104,7 @@ namespace DBHelperTest
         [TestMethod]
         public async Task TestUpdateUserAsync()
         {
-            string userId = "10";
+            long userId = 10;
             SysUser user = m_SysUserDal.Get(userId);
             if (user != null)
             {
@@ -101,7 +115,7 @@ namespace DBHelperTest
             }
             else
             {
-                Console.WriteLine("用户 ID=" + userId + " 不存在");
+                throw new Exception("测试数据被删除");
             }
         }
         #endregion

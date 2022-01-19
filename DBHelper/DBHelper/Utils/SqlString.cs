@@ -73,19 +73,12 @@ namespace DBUtil
                 object value = args[i];
                 Type valueType = value != null ? value.GetType() : null;
 
-                if (valueType == typeof(ResolveLikeModel))
+                if (valueType == typeof(SqlValue))
                 {
-                    ResolveLikeModel resolveLikeModel = value as ResolveLikeModel;
+                    SqlValue resolveLikeModel = value as SqlValue;
                     string markKey = _provider.GetParameterMark() + key;
                     sql = sql.Replace(markKey, string.Format(resolveLikeModel.Sql, markKey));
                     _paramList.Add(_provider.GetDbParameter(key, resolveLikeModel.Value));
-                }
-                else if (valueType == typeof(ResolveDateTimeModel))
-                {
-                    ResolveDateTimeModel resolveDateTimeModel = value as ResolveDateTimeModel;
-                    string markKey = _provider.GetParameterMark() + key;
-                    sql = sql.Replace(markKey, string.Format(resolveDateTimeModel.Sql, markKey));
-                    _paramList.Add(_provider.GetDbParameter(key, resolveDateTimeModel.Value));
                 }
                 else
                 {
@@ -125,25 +118,24 @@ namespace DBUtil
         }
         #endregion
 
-        #region 创建 Like SQL
+        #region ForContains
         /// <summary>
         /// 创建 Like SQL
         /// </summary>
-        public ResolveLikeModel ResolveLike(string value)
+        public SqlValue ForContains(string value)
         {
-            return _provider.ResolveLike(value);
+            return _provider.ForContains(value);
         }
         #endregion
 
-        #region 创建 字符串转数据库日期时间类型 SQL
+        #region ForDateTime
         /// <summary>
-        /// 创建 字符串转数据库日期时间类型 SQL
+        /// 创建 日期时间类型转换 SQL
         /// </summary>
-        /// <param name="value">字符串格式的日期</param>
-        /// <param name="format">数据库日期时间格式化字符串</param>
-        public ResolveDateTimeModel ResolveDateTime(string value, string format = null)
+        /// <param name="dateTime">日期时间</param>
+        public SqlValue ForDateTime(DateTime dateTime)
         {
-            return _provider.ResolveDateTime(value, format);
+            return _provider.ForDateTime(dateTime);
         }
         #endregion
 

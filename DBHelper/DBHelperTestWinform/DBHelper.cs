@@ -11,7 +11,7 @@ namespace DBHelperTestWinform
     public class DBHelper
     {
         #region 变量
-        private static ISessionHelper _dbHelper = new SessionHelper(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString(), DBType.Oracle);
+        private static ISessionHelper _sessionHelper = new SessionHelper(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString(), DBType.Oracle);
         #endregion
 
         #region 获取 ISession
@@ -20,7 +20,7 @@ namespace DBHelperTestWinform
         /// </summary>
         public static ISession GetSession()
         {
-            return _dbHelper.GetSession();
+            return _sessionHelper.GetSession();
         }
         #endregion
 
@@ -30,7 +30,7 @@ namespace DBHelperTestWinform
         /// </summary>
         public static async Task<ISession> GetSessionAsync()
         {
-            return await _dbHelper.GetSessionAsync();
+            return await _sessionHelper.GetSessionAsync();
         }
         #endregion
 
