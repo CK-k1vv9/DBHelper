@@ -2,6 +2,10 @@
 
 ## 简介
 
+一款轻量级ORM，查询使用原生SQL，查询结果映射到实体类，增删改支持实体类，支持Oracle、MSSQL、MySQL、SQLite等多种数据库，有配套Model生成器，方便自己扩展以支持更多数据库
+
+## 特点
+
 1. 支持Oracle、MSSQL、MySQL、SQLite四种数据库
 2. 方便扩展以支持更多关系数据库
 3. 有配套的Model生成器
@@ -164,35 +168,21 @@ public List<BsOrder> GetList(int? status, string remark, DateTime? startTime, Da
 {
     using (var session = DBHelper.GetSession())
     {
-        SqlString sql = new SqlString(session.Provider);
-
-        sql.AppendSql(@"
+        SqlString sql = session.CreateSqlString(@"
             select t.*, u.real_name as OrderUserRealName
             from bs_order t
             left join sys_user u on t.order_userid=u.id
             where 1=1");
 
-        if (status != null)
-        {
-            sql.AppendSql(" and t.status=@status", status);
-        }
+        sql.AppendIf(status.HasValue, " and t.status=@status", status);
 
-        if (!string.IsNullOrWhiteSpace(remark))
-        {
-            sql.AppendSql(" and t.remark like concat('%',@remark,'%')", remark);
-        }
+        sql.AppendIf(!string.IsNullOrWhiteSpace(remark), " and t.remark like concat('%',@remark,'%')", remark);
 
-        if (startTime != null)
-        {
-            sql.AppendSql(" and t.order_time>=STR_TO_DATE(@startTime, '%Y-%m-%d %H:%i:%s') ", startTime.Value.ToString("yyyy-MM-dd HH:mm:ss"));
-        }
+        sql.AppendIf(startTime.HasValue, " and t.order_time>=STR_TO_DATE(@startTime, '%Y-%m-%d %H:%i:%s') ", startTime.Value.ToString("yyyy-MM-dd HH:mm:ss"));
 
-        if (endTime != null)
-        {
-            sql.AppendSql(" and t.order_time<=STR_TO_DATE(@endTime, '%Y-%m-%d %H:%i:%s') ", endTime.Value.ToString("yyyy-MM-dd HH:mm:ss"));
-        }
+        sql.AppendIf(endTime.HasValue, " and t.order_time<=STR_TO_DATE(@endTime, '%Y-%m-%d %H:%i:%s') ", endTime.Value.ToString("yyyy-MM-dd HH:mm:ss"));
 
-        sql.AppendSql(" order by t.order_time desc, t.id asc ");
+        sql.Append(" order by t.order_time desc, t.id asc ");
 
         List<BsOrder> list = session.FindListBySql<BsOrder>(sql.SQL, sql.Params);
         return list;
@@ -204,39 +194,27 @@ public List<BsOrder> GetList(int? status, string remark, DateTime? startTime, Da
 ### 分页查询
 
 ```C#
-public List<BsOrder> GetListPage(ref PagerModel pager, int? status, string remark, DateTime? startTime, DateTime? endTime)
+public List<BsOrder> GetListPage(ref PageModel pageModel, int? status, string remark, DateTime? startTime, DateTime? endTime)
 {
     using (var session = DBHelper.GetSession())
     {
-        SqlString sql = new SqlString(session.Provider, @"
+        SqlString sql = session.CreateSqlString(@"
             select t.*, u.real_name as OrderUserRealName
             from bs_order t
             left join sys_user u on t.order_userid=u.id
             where 1=1");
 
-        if (status != null)
-        {
-            sql.AppendSql(" and t.status=@status", status);
-        }
+        sql.AppendIf(status.HasValue, " and t.status=@status", status);
 
-        if (!string.IsNullOrWhiteSpace(remark))
-        {
-            sql.AppendSql(" and t.remark like concat('%',@remark,'%')", remark);
-        }
+        sql.AppendIf(!string.IsNullOrWhiteSpace(remark), " and t.remark like concat('%',@remark,'%')", remark);
 
-        if (startTime != null)
-        {
-            sql.AppendSql(" and t.order_time>=STR_TO_DATE(@startTime, '%Y-%m-%d %H:%i:%s') ", startTime.Value.ToString("yyyy-MM-dd HH:mm:ss"));
-        }
+        sql.AppendIf(startTime.HasValue, " and t.order_time>=STR_TO_DATE(@startTime, '%Y-%m-%d %H:%i:%s') ", startTime.Value.ToString("yyyy-MM-dd HH:mm:ss"));
 
-        if (endTime != null)
-        {
-            sql.AppendSql(" and t.order_time<=STR_TO_DATE(@endTime, '%Y-%m-%d %H:%i:%s') ", endTime.Value.ToString("yyyy-MM-dd HH:mm:ss"));
-        }
+        sql.AppendIf(endTime.HasValue, " and t.order_time<=STR_TO_DATE(@endTime, '%Y-%m-%d %H:%i:%s') ", endTime.Value.ToString("yyyy-MM-dd HH:mm:ss"));
 
         string orderby = " order by t.order_time desc, t.id asc ";
-        pager = session.FindPageBySql<BsOrder>(sql.SQL, orderby, pager.PageSize, pager.CurrentPage, sql.Params);
-        return pager.Result as List<BsOrder>;
+        pageModel = session.FindPageBySql<BsOrder>(sql.SQL, orderby, pageModel.PageSize, pageModel.CurrentPage, sql.Params);
+        return pageModel.GetResult<BsOrder>();
     }
 }
 ```
@@ -286,39 +264,27 @@ public string Insert(BsOrder order, List<BsOrderDetail> detailList)
 ### 异步查询
 
 ```C#
-public async Task<PagerModel> GetListPageAsync(PagerModel pager, int? status, string remark, DateTime? startTime, DateTime? endTime)
+public async Task<List<BsOrder>> GetListPageAsync(PageModel pageModel, int? status, string remark, DateTime? startTime, DateTime? endTime)
 {
     using (var session = await DBHelper.GetSessionAsync())
     {
-        SqlString sql = new SqlString(session.Provider, @"
+        SqlString sql = session.CreateSqlString(@"
             select t.*, u.real_name as OrderUserRealName
             from bs_order t
             left join sys_user u on t.order_userid=u.id
             where 1=1");
 
-        if (status != null)
-        {
-            sql.AppendSql(" and t.status=@status", status);
-        }
+        sql.AppendIf(status.HasValue, " and t.status=@status", status);
 
-        if (!string.IsNullOrWhiteSpace(remark))
-        {
-            sql.AppendSql(" and t.remark like concat('%',@remark,'%')", remark);
-        }
+        sql.AppendIf(!string.IsNullOrWhiteSpace(remark), " and t.remark like concat('%',@remark,'%')", remark);
 
-        if (startTime != null)
-        {
-            sql.AppendSql(" and t.order_time>=STR_TO_DATE(@startTime, '%Y-%m-%d %H:%i:%s') ", startTime.Value.ToString("yyyy-MM-dd HH:mm:ss"));
-        }
+        sql.AppendIf(startTime.HasValue, " and t.order_time>=STR_TO_DATE(@startTime, '%Y-%m-%d %H:%i:%s') ", startTime.Value.ToString("yyyy-MM-dd HH:mm:ss"));
 
-        if (endTime != null)
-        {
-            sql.AppendSql(" and t.order_time<=STR_TO_DATE(@endTime, '%Y-%m-%d %H:%i:%s') ", endTime.Value.ToString("yyyy-MM-dd HH:mm:ss"));
-        }
+        sql.AppendIf(endTime.HasValue, " and t.order_time<=STR_TO_DATE(@endTime, '%Y-%m-%d %H:%i:%s') ", endTime.Value.ToString("yyyy-MM-dd HH:mm:ss"));
 
         string orderby = " order by t.order_time desc, t.id asc ";
-        pager = await session.FindPageBySqlAsync<BsOrder>(sql.SQL, orderby, pager.PageSize, pager.CurrentPage, sql.Params);
-        return pager;
+        pageModel = await session.FindPageBySqlAsync<BsOrder>(sql.SQL, orderby, pageModel.PageSize, pageModel.CurrentPage, sql.Params);
+        return pageModel.GetResult<BsOrder>();
     }
 }
 ```
@@ -330,35 +296,21 @@ public List<BsOrder> GetListExt(int? status, string remark, DateTime? startTime,
 {
     using (var session = DBHelper.GetSession())
     {
-        SqlString sql = new SqlString(session.Provider);
-
-        sql.AppendSql(@"
+        SqlString sql = session.CreateSqlString(@"
             select t.*, u.real_name as OrderUserRealName
             from bs_order t
             left join sys_user u on t.order_userid=u.id
             where 1=1");
 
-        if (status != null)
-        {
-            sql.AppendSql(" and t.status=@status", status);
-        }
+        sql.AppendIf(status.HasValue, " and t.status=@status", status);
 
-        if (!string.IsNullOrWhiteSpace(remark))
-        {
-            sql.AppendSql(" and t.remark like @remark", sql.ForContains(remark));
-        }
+        sql.AppendIf(!string.IsNullOrWhiteSpace(remark), " and t.remark like @remark", sql.ForContains(remark));
 
-        if (startTime != null)
-        {
-            sql.AppendSql(" and t.order_time >= @startTime ", sql.ForDateTime(startTime.Value));
-        }
+        sql.AppendIf(startTime.HasValue, " and t.order_time >= @startTime ", sql.ForDateTime(startTime.Value));
 
-        if (endTime != null)
-        {
-            sql.AppendSql(" and t.order_time <= @endTime ", sql.ForDateTime(endTime.Value));
-        }
+        sql.AppendIf(endTime.HasValue, " and t.order_time <= @endTime ", sql.ForDateTime(endTime.Value));
 
-        sql.AppendSql(" order by t.order_time desc, t.id asc ");
+        sql.Append(" order by t.order_time desc, t.id asc ");
 
         List<BsOrder> list = session.FindListBySql<BsOrder>(sql.SQL, sql.Params);
         return list;

@@ -59,7 +59,7 @@
     <Compile Include="ISessionHelper.cs" />
     <Compile Include="Session\DBSession.cs" />
     <Compile Include="Enums\DBType.cs" />
-    <Compile Include="Models\PagerModel.cs" />
+    <Compile Include="Models\PageModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Provider\AccessProvider.cs" />
     <Compile Include="Provider\IProvider.cs" />

@@ -10,7 +10,7 @@ namespace DBUtil
     /// 分页
     /// </summary>
     [Serializable]
-    public class PagerModel
+    public class PageModel
     {
         #region 字段
         /// <summary>
@@ -30,7 +30,7 @@ namespace DBUtil
         /// </summary>
         public string Order { get; set; }
         /// <summary>
-        /// 记录
+        /// 查询结果
         /// </summary>
         public object Result { get; set; }
         /// <summary>
@@ -40,7 +40,7 @@ namespace DBUtil
         #endregion
 
         #region 构造函数
-        public PagerModel()
+        public PageModel()
         {
 
         }
@@ -50,7 +50,7 @@ namespace DBUtil
         /// </summary>
         /// <param name="page">当前页数</param>
         /// <param name="rows">每页记录数</param>
-        public PagerModel(int page, int rows)
+        public PageModel(int page, int rows)
         {
             this.CurrentPage = page;
             this.PageSize = rows;
@@ -101,6 +101,23 @@ namespace DBUtil
                     return CurrentPage + 1;
                 }
                 return PageCount;
+            }
+        }
+        #endregion
+
+        #region 方法
+        /// <summary>
+        /// 获取查询结果
+        /// </summary>
+        public List<T> GetResult<T>()
+        {
+            if (Result == null)
+            {
+                return new List<T>();
+            }
+            else
+            {
+                return Result as List<T>;
             }
         }
         #endregion

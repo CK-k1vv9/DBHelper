@@ -39,19 +39,21 @@ namespace DBUtil
             _provider = provider;
             if (sql != null)
             {
-                AppendSql(sql, args);
+                Append(sql, args);
             }
         }
         #endregion
 
-        #region AppendSql
+        #region Append
         /// <summary>
         /// 追加参数化SQL
         /// </summary>
         /// <param name="sql">SQL</param>
         /// <param name="args">参数</param>
-        public void AppendSql(string sql, params object[] args)
+        public void Append(string sql, params object[] args)
         {
+            if (args == null) throw new Exception("参数args不能为null");
+
             Dictionary<string, object> dict = new Dictionary<string, object>();
             MatchCollection mc = _regex.Matches(sql);
             foreach (Match m in mc)
@@ -86,20 +88,38 @@ namespace DBUtil
                 }
             }
 
-            _sql.Append(sql);
+            _sql.Append(string.Format(" {0} ", sql.Trim()));
+        }
+        #endregion
+
+        #region AppendIf
+        /// <summary>
+        /// 追加参数化SQL
+        /// </summary>
+        /// <param name="condition">当condition等于true时追加SQL，等于false时不追加SQL</param>
+        /// <param name="sql">SQL</param>
+        /// <param name="args">参数</param>
+        public SqlString AppendIf(bool condition, string sql, params object[] args)
+        {
+            if (condition)
+            {
+                Append(sql, args);
+            }
+
+            return this;
         }
         #endregion
 
         #region AppendFormat
         /// <summary>
-        /// 封装StringBuilder AppendFormat 追加非参数化SQL
+        /// 封装 StringBuilder AppendFormat 追加非参数化SQL
         /// </summary>
         /// <param name="sql">SQL</param>
         /// <param name="args">参数</param>
         public void AppendFormat(string sql, params object[] args)
         {
-            if (_regex.IsMatch(sql)) throw new Exception("追加参数化SQL请使用AppendSql");
-            _sql.AppendFormat(sql, args);
+            if (_regex.IsMatch(sql)) throw new Exception("追加参数化SQL请使用Append");
+            _sql.AppendFormat(string.Format(" {0} ", sql.Trim()), args);
         }
         #endregion
 

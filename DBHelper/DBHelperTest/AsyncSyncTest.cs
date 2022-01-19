@@ -43,13 +43,11 @@ namespace DBHelperTest
                 {
                     try
                     {
-                        PagerModel pagerModel = new PagerModel();
-                        pagerModel.CurrentPage = 1;
-                        pagerModel.PageSize = _pageSize;
+                        PageModel pageModel = new PageModel();
+                        pageModel.CurrentPage = 1;
+                        pageModel.PageSize = _pageSize;
 
-                        var task = m_BsOrderDal.GetListPage(ref pagerModel, 0, null, DateTime.MinValue, DateTime.Now.AddDays(1));
-
-                        List<BsOrder> list = pagerModel.Result as List<BsOrder>;
+                        List<BsOrder> list = m_BsOrderDal.GetListPage(ref pageModel, 0, null, DateTime.MinValue, DateTime.Now.AddDays(1));
 
                         if ((int)obj == 0)
                         {
@@ -78,13 +76,11 @@ namespace DBHelperTest
             {
                 try
                 {
-                    PagerModel pagerModel = new PagerModel();
-                    pagerModel.CurrentPage = 1;
-                    pagerModel.PageSize = _pageSize;
+                    PageModel pageModel = new PageModel();
+                    pageModel.CurrentPage = 1;
+                    pageModel.PageSize = _pageSize;
 
-                    var result = await m_BsOrderDal.GetListPageAsync(pagerModel, 0, null, DateTime.MinValue, DateTime.Now.AddDays(1));
-
-                    List<BsOrder> list = result.Result as List<BsOrder>;
+                    List<BsOrder> list = await m_BsOrderDal.GetListPageAsync(pageModel, 0, null, DateTime.MinValue, DateTime.Now.AddDays(1));
 
                     if (i == 0)
                     {

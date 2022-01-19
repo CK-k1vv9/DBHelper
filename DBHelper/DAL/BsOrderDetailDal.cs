@@ -24,7 +24,7 @@ namespace DAL
 
             using (var session = DBHelper.GetSession())
             {
-                SqlString sql = new SqlString(session.Provider, "select * from bs_order_detail where order_id=@orderId order by order_num", orderId);
+                SqlString sql = session.CreateSqlString("select * from bs_order_detail where order_id=@orderId order by order_num", orderId);
 
                 return session.FindListBySql<BsOrderDetail>(sql.SQL, sql.Params);
             }

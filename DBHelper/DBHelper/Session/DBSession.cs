@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 * 注意引用的MySql.Data.dll、System.Data.SQLite.dll的版本，32位还是64位
 * 有的System.Data.SQLite.dll版本需要依赖SQLite.Interop.dll
 * 
-* 需要配套的PagerModel、IsDBFieldAttribute、IsIdAttribute类
+* 需要配套的PageModel、IsDBFieldAttribute、IsIdAttribute类
 * 
 * 为方便使用，需要配套的Model生成器
 * ---------------------------------------------------------------------- */
@@ -66,19 +66,6 @@ namespace DBUtil
         /// 数据库自增(全局设置)
         /// </summary>
         private bool _autoIncrement;
-        #endregion
-
-        #region 属性
-        /// <summary>
-        /// 数据库 Provider
-        /// </summary>
-        public IProvider Provider
-        {
-            get
-            {
-                return _provider;
-            }
-        }
         #endregion
 
         #region 静态构造函数
@@ -154,6 +141,16 @@ namespace DBUtil
         public async Task InitConnAsync()
         {
             await _conn.OpenAsync();
+        }
+        #endregion
+
+        #region 创建SqlString对象
+        /// <summary>
+        /// 创建SqlString对象
+        /// </summary>
+        public SqlString CreateSqlString(string sql = null, params object[] args)
+        {
+            return new SqlString(_provider, sql, args);
         }
         #endregion
 

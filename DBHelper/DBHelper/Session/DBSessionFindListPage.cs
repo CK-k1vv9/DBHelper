@@ -14,22 +14,22 @@ namespace DBUtil
         /// <summary>
         /// 分页获取列表
         /// </summary>
-        public PagerModel FindPageBySql<T>(string sql, string orderby, int pageSize, int currentPage) where T : new()
+        public PageModel FindPageBySql<T>(string sql, string orderby, int pageSize, int currentPage) where T : new()
         {
-            PagerModel pagerModel = new PagerModel(currentPage, pageSize);
+            PageModel pageModel = new PageModel(currentPage, pageSize);
 
             IDbCommand cmd = null;
             string commandText = null;
             commandText = string.Format("select count(*) from ({0}) T", sql);
             cmd = _provider.GetCommand(commandText, _conn);
-            pagerModel.TotalRows = int.Parse(cmd.ExecuteScalar().ToString());
+            pageModel.TotalRows = int.Parse(cmd.ExecuteScalar().ToString());
 
-            sql = _provider.CreatePageSql(sql, orderby, pageSize, currentPage, pagerModel.TotalRows);
+            sql = _provider.CreatePageSql(sql, orderby, pageSize, currentPage, pageModel.TotalRows);
 
             List<T> list = FindListBySql<T>(sql);
-            pagerModel.Result = list;
+            pageModel.Result = list;
 
-            return pagerModel;
+            return pageModel;
         }
         #endregion
 
@@ -37,23 +37,23 @@ namespace DBUtil
         /// <summary>
         /// 分页获取列表
         /// </summary>
-        public async Task<PagerModel> FindPageBySqlAsync<T>(string sql, string orderby, int pageSize, int currentPage) where T : new()
+        public async Task<PageModel> FindPageBySqlAsync<T>(string sql, string orderby, int pageSize, int currentPage) where T : new()
         {
-            PagerModel pagerModel = new PagerModel(currentPage, pageSize);
+            PageModel pageModel = new PageModel(currentPage, pageSize);
 
             DbCommand cmd = null;
             string commandText = null;
             commandText = string.Format("select count(*) from ({0}) T", sql);
             cmd = _provider.GetCommand(commandText, _conn);
             object obj = await cmd.ExecuteScalarAsync();
-            pagerModel.TotalRows = int.Parse(obj.ToString());
+            pageModel.TotalRows = int.Parse(obj.ToString());
 
-            sql = _provider.CreatePageSql(sql, orderby, pageSize, currentPage, pagerModel.TotalRows);
+            sql = _provider.CreatePageSql(sql, orderby, pageSize, currentPage, pageModel.TotalRows);
 
             List<T> list = await FindListBySqlAsync<T>(sql);
-            pagerModel.Result = list;
+            pageModel.Result = list;
 
-            return pagerModel;
+            return pageModel;
         }
         #endregion
 
@@ -61,9 +61,9 @@ namespace DBUtil
         /// <summary>
         /// 分页获取列表
         /// </summary>
-        public PagerModel FindPageBySql<T>(string sql, string orderby, int pageSize, int currentPage, params DbParameter[] cmdParms) where T : new()
+        public PageModel FindPageBySql<T>(string sql, string orderby, int pageSize, int currentPage, params DbParameter[] cmdParms) where T : new()
         {
-            PagerModel pagerModel = new PagerModel(currentPage, pageSize);
+            PageModel pageModel = new PageModel(currentPage, pageSize);
 
             IDbCommand cmd = null;
             string commandText = null;
@@ -71,23 +71,23 @@ namespace DBUtil
             commandText = string.Format("select count(*) from ({0}) T", sql);
             cmd = _provider.GetCommand(commandText, _conn);
             foreach (DbParameter parm in cmdParms) cmd.Parameters.Add(parm);
-            pagerModel.TotalRows = int.Parse(cmd.ExecuteScalar().ToString());
+            pageModel.TotalRows = int.Parse(cmd.ExecuteScalar().ToString());
             cmd.Parameters.Clear();
 
-            sql = _provider.CreatePageSql(sql, orderby, pageSize, currentPage, pagerModel.TotalRows);
+            sql = _provider.CreatePageSql(sql, orderby, pageSize, currentPage, pageModel.TotalRows);
 
             List<T> list = FindListBySql<T>(sql, cmdParms);
-            pagerModel.Result = list;
+            pageModel.Result = list;
 
-            return pagerModel;
+            return pageModel;
         }
 
         /// <summary>
         /// 分页(任意entity，尽量少的字段)
         /// </summary>
-        public async Task<PagerModel> FindPageBySqlAsync<T>(string sql, string orderby, int pageSize, int currentPage, params DbParameter[] cmdParms) where T : new()
+        public async Task<PageModel> FindPageBySqlAsync<T>(string sql, string orderby, int pageSize, int currentPage, params DbParameter[] cmdParms) where T : new()
         {
-            PagerModel pagerModel = new PagerModel(currentPage, pageSize);
+            PageModel pageModel = new PageModel(currentPage, pageSize);
 
             DbCommand cmd = null;
             string commandText = null;
@@ -96,15 +96,15 @@ namespace DBUtil
             cmd = _provider.GetCommand(commandText, _conn);
             foreach (DbParameter parm in cmdParms) cmd.Parameters.Add(parm);
             object obj = await cmd.ExecuteScalarAsync();
-            pagerModel.TotalRows = int.Parse(obj.ToString());
+            pageModel.TotalRows = int.Parse(obj.ToString());
             cmd.Parameters.Clear();
 
-            sql = _provider.CreatePageSql(sql, orderby, pageSize, currentPage, pagerModel.TotalRows);
+            sql = _provider.CreatePageSql(sql, orderby, pageSize, currentPage, pageModel.TotalRows);
 
             List<T> list = await FindListBySqlAsync<T>(sql, cmdParms);
-            pagerModel.Result = list;
+            pageModel.Result = list;
 
-            return pagerModel;
+            return pageModel;
         }
         #endregion
 

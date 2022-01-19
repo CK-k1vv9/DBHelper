@@ -14,24 +14,24 @@ namespace DBUtil
         /// <summary>
         /// 分页获取列表
         /// </summary>
-        PagerModel FindPageBySql<T>(string sql, string orderby, int pageSize, int currentPage) where T : new();
+        PageModel FindPageBySql<T>(string sql, string orderby, int pageSize, int currentPage) where T : new();
 
         /// <summary>
         /// 分页获取列表
         /// </summary>
-        Task<PagerModel> FindPageBySqlAsync<T>(string sql, string orderby, int pageSize, int currentPage) where T : new();
+        Task<PageModel> FindPageBySqlAsync<T>(string sql, string orderby, int pageSize, int currentPage) where T : new();
         #endregion
 
         #region 分页获取列表(参数化查询)
         /// <summary>
         /// 分页获取列表
         /// </summary>
-        PagerModel FindPageBySql<T>(string sql, string orderby, int pageSize, int currentPage, params DbParameter[] cmdParms) where T : new();
+        PageModel FindPageBySql<T>(string sql, string orderby, int pageSize, int currentPage, params DbParameter[] cmdParms) where T : new();
 
         /// <summary>
         /// 分页获取列表
         /// </summary>
-        Task<PagerModel> FindPageBySqlAsync<T>(string sql, string orderby, int pageSize, int currentPage, params DbParameter[] cmdParms) where T : new();
+        Task<PageModel> FindPageBySqlAsync<T>(string sql, string orderby, int pageSize, int currentPage, params DbParameter[] cmdParms) where T : new();
         #endregion
 
         #region 分页获取列表(返回DataSet)

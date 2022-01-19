@@ -250,7 +250,7 @@ namespace PerformanceTest
                 {
                     using (var session = DBHelper.GetSession())
                     {
-                        SqlString sql = new SqlString(session.Provider, @"
+                        SqlString sql = session.CreateSqlString(@"
                             select t.* 
                             from sys_user t 
                             where t.id > @id 
@@ -287,7 +287,7 @@ namespace PerformanceTest
                         List<SysUser> userList = new List<SysUser>();
                         for (int page = 1; page <= pageCount; page++)
                         {
-                            SqlString sql = new SqlString(session.Provider, @"
+                            SqlString sql = session.CreateSqlString(@"
                                 select t.* 
                                 from sys_user t 
                                 where 1=1 

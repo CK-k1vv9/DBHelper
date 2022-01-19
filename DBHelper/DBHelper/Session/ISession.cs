@@ -10,11 +10,11 @@ namespace DBUtil
 {
     public partial interface ISession : IDisposable
     {
-        #region 属性
+        #region 创建SqlString对象
         /// <summary>
-        /// 数据库 Provider
+        /// 创建SqlString对象
         /// </summary>
-        IProvider Provider { get; }
+        SqlString CreateSqlString(string sql = null, params object[] args);
         #endregion
 
         #region 获取最大编号

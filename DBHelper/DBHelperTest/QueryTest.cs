@@ -39,11 +39,11 @@ namespace DBHelperTest
         [TestMethod]
         public void TestQueryPage()
         {
-            PagerModel pagerModel = new PagerModel();
-            pagerModel.CurrentPage = 1;
-            pagerModel.PageSize = 10;
+            PageModel pageModel = new PageModel();
+            pageModel.CurrentPage = 1;
+            pageModel.PageSize = 10;
 
-            List<BsOrder> list = m_BsOrderDal.GetListPage(ref pagerModel, 0, null, DateTime.MinValue, DateTime.Now.AddDays(1));
+            List<BsOrder> list = m_BsOrderDal.GetListPage(ref pageModel, 0, null, DateTime.MinValue, DateTime.Now.AddDays(1));
 
             foreach (BsOrder item in list)
             {
