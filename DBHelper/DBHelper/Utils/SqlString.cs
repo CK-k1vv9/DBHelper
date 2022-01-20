@@ -148,6 +148,26 @@ namespace DBUtil
         }
         #endregion
 
+        #region ForStartsWith
+        /// <summary>
+        /// 创建 Like SQL
+        /// </summary>
+        public SqlValue ForStartsWith(string value)
+        {
+            return _provider.ForStartsWith(value);
+        }
+        #endregion
+
+        #region ForEndsWith
+        /// <summary>
+        /// 创建 Like SQL
+        /// </summary>
+        public SqlValue ForEndsWith(string value)
+        {
+            return _provider.ForEndsWith(value);
+        }
+        #endregion
+
         #region ForDateTime
         /// <summary>
         /// 创建 日期时间类型转换 SQL
