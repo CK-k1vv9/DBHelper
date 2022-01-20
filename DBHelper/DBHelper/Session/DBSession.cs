@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 * 注意引用的MySql.Data.dll、System.Data.SQLite.dll的版本，32位还是64位
 * 有的System.Data.SQLite.dll版本需要依赖SQLite.Interop.dll
 * 
-* 需要配套的PageModel、IsDBFieldAttribute、IsIdAttribute类
+* 需要配套的PageModel、DBFieldAttribute、DBKeyAttribute类
 * 
 * 为方便使用，需要配套的Model生成器
 * ---------------------------------------------------------------------- */

@@ -141,7 +141,7 @@ namespace DBUtil
             {
                 PropertyInfo propertyInfo = propertyInfoEx.PropertyInfo;
 
-                if (propertyInfo.GetCustomAttributes(typeof(IsDBFieldAttribute), false).Length > 0)
+                if (propertyInfo.GetCustomAttributes(typeof(DBFieldAttribute), false).Length > 0)
                 {
                     object oldVal = propertyInfo.GetValue(oldObj, null);
                     object val = propertyInfo.GetValue(obj, null);
@@ -188,7 +188,7 @@ namespace DBUtil
                 {
                     PropertyInfo propertyInfo = propertyInfoEx.PropertyInfo;
 
-                    if (propertyInfo.GetCustomAttributes(typeof(IsDBFieldAttribute), false).Length > 0)
+                    if (propertyInfo.GetCustomAttributes(typeof(DBFieldAttribute), false).Length > 0)
                     {
                         object oldVal = propertyInfo.GetValue(oldObj, null);
                         object val = propertyInfo.GetValue(obj, null);

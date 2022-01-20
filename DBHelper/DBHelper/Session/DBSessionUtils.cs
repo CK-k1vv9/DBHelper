@@ -66,7 +66,7 @@ namespace DBUtil
             {
                 PropertyInfo propertyInfo = propertyInfoEx.PropertyInfo;
 
-                if (propertyInfo.GetCustomAttributes(typeof(IsIdAttribute), false).Length > 0)
+                if (propertyInfo.GetCustomAttributes(typeof(DBKeyAttribute), false).Length > 0)
                 {
                     return propertyInfoEx.FieldName;
                 }
@@ -90,10 +90,10 @@ namespace DBUtil
                     if (propertyInfo.GetCustomAttribute<EdmRelationshipNavigationPropertyAttribute>() == null && propertyInfo.GetCustomAttribute<BrowsableAttribute>() == null)
                     {
                         PropertyInfoEx propertyInfoEx = new PropertyInfoEx(propertyInfo);
-                        IsDBFieldAttribute isDBFieldAttribute = propertyInfo.GetCustomAttribute<IsDBFieldAttribute>();
-                        if (isDBFieldAttribute != null && !string.IsNullOrWhiteSpace(isDBFieldAttribute.FieldName))
+                        DBFieldAttribute dbFieldAttribute = propertyInfo.GetCustomAttribute<DBFieldAttribute>();
+                        if (dbFieldAttribute != null && !string.IsNullOrWhiteSpace(dbFieldAttribute.FieldName))
                         {
-                            propertyInfoEx.FieldName = isDBFieldAttribute.FieldName;
+                            propertyInfoEx.FieldName = dbFieldAttribute.FieldName;
                         }
                         else
                         {
@@ -121,7 +121,7 @@ namespace DBUtil
             {
                 PropertyInfo propertyInfo = propertyInfoEx.PropertyInfo;
 
-                if (propertyInfo.GetCustomAttributes(typeof(IsIdAttribute), false).Length > 0)
+                if (propertyInfo.GetCustomAttributes(typeof(DBKeyAttribute), false).Length > 0)
                 {
                     if (i != 0) sql.Append(" and ");
                     object fieldValue = val.GetType().GetProperty(propertyInfo.Name).GetValue(val, null);
@@ -147,7 +147,7 @@ namespace DBUtil
         /// </summary>
         private bool IsAutoIncrementPk(Type modelType, PropertyInfo propertyInfo, bool autoIncrement)
         {
-            if (propertyInfo.GetCustomAttributes(typeof(IsIdAttribute), false).Length > 0)
+            if (propertyInfo.GetCustomAttributes(typeof(DBKeyAttribute), false).Length > 0)
             {
                 AutoIncrementAttribute modelAutoIncrementAttribute = modelType.GetCustomAttribute<AutoIncrementAttribute>();
                 if (modelAutoIncrementAttribute != null) return modelAutoIncrementAttribute.Value;

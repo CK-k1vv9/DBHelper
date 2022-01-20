@@ -54,8 +54,8 @@
     <Compile Include="Models\PropertyInfoEx.cs" />
     <Compile Include="Models\SqlValue.cs" />
     <Compile Include="SessionHelper.cs" />
-    <Compile Include="Attributes\IsDBFieldAttribute.cs" />
-    <Compile Include="Attributes\IsIdAttribute.cs" />
+    <Compile Include="Attributes\DBFieldAttribute.cs" />
+    <Compile Include="Attributes\DBKeyAttribute.cs" />
     <Compile Include="ISessionHelper.cs" />
     <Compile Include="Session\DBSession.cs" />
     <Compile Include="Enums\DBType.cs" />

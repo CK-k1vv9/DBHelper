@@ -16,56 +16,56 @@ namespace Models
         /// <summary>
         /// 主键
         /// </summary>
-        [IsId]
-        [IsDBField]
+        [DBKey]
+        [DBField]
         public long Id { get; set; }
 
         /// <summary>
         /// 用户名
         /// </summary>
-        [IsDBField("user_name")]
+        [DBField("user_name")]
         public string UserName { get; set; }
 
         /// <summary>
         /// 用户姓名
         /// </summary>
-        [IsDBField("real_name")]
+        [DBField("real_name")]
         public string RealName { get; set; }
 
         /// <summary>
         /// 用户密码
         /// </summary>
-        [IsDBField]
+        [DBField]
         public string Password { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        [IsDBField]
+        [DBField]
         public string Remark { get; set; }
 
         /// <summary>
         /// 创建者ID
         /// </summary>
-        [IsDBField("create_userid")]
+        [DBField("create_userid")]
         public string CreateUserid { get; set; }
 
         /// <summary>
         /// 创建时间
         /// </summary>
-        [IsDBField("create_time")]
+        [DBField("create_time")]
         public DateTime CreateTime { get; set; }
 
         /// <summary>
         /// 更新者ID
         /// </summary>
-        [IsDBField("update_userid")]
+        [DBField("update_userid")]
         public string UpdateUserid { get; set; }
 
         /// <summary>
         /// 更新时间
         /// </summary>
-        [IsDBField("update_time")]
+        [DBField("update_time")]
         public DateTime? UpdateTime { get; set; }
 
     }

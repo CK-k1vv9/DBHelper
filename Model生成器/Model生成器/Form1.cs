@@ -192,7 +192,7 @@ namespace ModelGenerator
 
                             if (!column.PrimaryKey)
                             {
-                                strField = strField.Replace("        [IsId]\r\n", string.Empty);
+                                strField = strField.Replace("        [DBKey]\r\n", string.Empty);
                             }
 
                             strField = strField.Replace("#data_type", data_type);
@@ -201,11 +201,11 @@ namespace ModelGenerator
 
                             if (fieldName.ToUpper() == column.ColumnName.ToUpper())
                             {
-                                strField = strField.Replace("#field_atrribute_value", "[IsDBField]");
+                                strField = strField.Replace("#field_atrribute_value", "[DBField]");
                             }
                             else
                             {
-                                strField = strField.Replace("#field_atrribute_value", "[IsDBField(\"" + column.ColumnName + "\")]");
+                                strField = strField.Replace("#field_atrribute_value", "[DBField(\"" + column.ColumnName + "\")]");
                             }
 
                             sbFields.Append(strField);

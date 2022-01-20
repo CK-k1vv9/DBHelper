@@ -96,7 +96,7 @@ namespace DBUtil
 
                 if (IsAutoIncrementPk(type, propertyInfo, autoIncrement)) continue;
 
-                if (propertyInfo.GetCustomAttributes(typeof(IsDBFieldAttribute), false).Length > 0)
+                if (propertyInfo.GetCustomAttributes(typeof(DBFieldAttribute), false).Length > 0)
                 {
                     propertyNameList.Add(propertyInfoEx.FieldName);
                     savedCount++;
@@ -114,7 +114,7 @@ namespace DBUtil
 
                 if (IsAutoIncrementPk(type, propertyInfo, autoIncrement)) continue;
 
-                if (propertyInfo.GetCustomAttributes(typeof(IsDBFieldAttribute), false).Length > 0)
+                if (propertyInfo.GetCustomAttributes(typeof(DBFieldAttribute), false).Length > 0)
                 {
                     object val = propertyInfo.GetValue(obj, null);
                     DbParameter param = _provider.GetDbParameter(_parameterMark + propertyInfoEx.FieldName, val == null ? DBNull.Value : val);
@@ -140,7 +140,7 @@ namespace DBUtil
 
                 if (IsAutoIncrementPk(type, propertyInfo, autoIncrement)) continue;
 
-                if (propertyInfo.GetCustomAttributes(typeof(IsDBFieldAttribute), false).Length > 0)
+                if (propertyInfo.GetCustomAttributes(typeof(DBFieldAttribute), false).Length > 0)
                 {
                     propertyNameList.Add(propertyInfoEx.FieldName);
                     savedCount++;
@@ -169,7 +169,7 @@ namespace DBUtil
 
                     if (IsAutoIncrementPk(type, propertyInfo, autoIncrement)) continue;
 
-                    if (propertyInfo.GetCustomAttributes(typeof(IsDBFieldAttribute), false).Length > 0)
+                    if (propertyInfo.GetCustomAttributes(typeof(DBFieldAttribute), false).Length > 0)
                     {
                         object val = propertyInfo.GetValue(obj, null);
                         DbParameter param = _provider.GetDbParameter(_parameterMark + propertyInfoEx.FieldName + n, val == null ? DBNull.Value : val);

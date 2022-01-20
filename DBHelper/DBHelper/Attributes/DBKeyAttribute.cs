@@ -9,7 +9,7 @@ namespace DBUtil
     /// 标识该属性是主健
     /// </summary>
     [Serializable, AttributeUsage(AttributeTargets.Property | AttributeTargets.Class)]
-    public class IsIdAttribute : Attribute
+    public class DBKeyAttribute : Attribute
     {
     }
 }
