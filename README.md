@@ -456,7 +456,7 @@ public void TestQueryByLambda6()
 
         List<BsOrder> list = sql.Query()
 
-            .WhereIf<BsOrder>(!string.IsNullOrWhiteSpace(remark),
+            .WhereIf(!string.IsNullOrWhiteSpace(remark),
                 t => t.Remark.Contains(remark)
                 && t.CreateTime < DateTime.Now
                 && t.CreateUserid == "10")
