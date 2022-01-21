@@ -14,15 +14,23 @@
 6. 查询结果通过映射转成实体类或实体类集合
 7. 支持参数化查询，通过SqlString类提供非常方便的参数化查询
 8. 支持连接多个数据源
+9. 单表查询、单表分页查询、简单的联表分页查询支持Lambda表达式
+10. 支持原生SQL和Lambda表达式混写
 
 ## 优点
 
-1. 代码实现比较简单，有经验的程序员可以自己修改、扩展源码
+1. 代码实现比较简单，有经验的程序员容易掌控代码，自己修改和扩展
 2. 查询使用原生SQL
 
 ## 缺点
 
-1. 不支持Lambda表达式、链式调用等语法糖
+1. 联表查询对Lambda表达式的支持比较弱
+2. 复杂查询不支持Lambda表达式
+
+## 建议
+
+1. 单表查询可以使用Lambda表达式
+2. 联表查询以及复杂查询建议使用原生SQL或原生SQL和Lambda表达式混写
 
 ## 作者邮箱
 
@@ -167,6 +175,11 @@ public partial class BsOrder
     /// 下单用户姓名
     /// </summary>
     public string OrderUserRealName { get; set; }
+
+    /// <summary>
+    /// 下单用户名
+    /// </summary>
+    public string OrderUserName { get; set; }
 }
 ```
 
@@ -397,10 +410,10 @@ public async Task<List<BsOrder>> GetListPageAsync(PageModel pageModel, int? stat
 }
 ```
 
-### 条件查询(使用 ForContains、ForStartsWith、ForEndsWith、ForDateTime 等辅助方法)
+### 条件查询(使用 ForContains、ForStartsWith、ForEndsWith、ForDateTime、ForList 等辅助方法)
 
 ```C#
-public List<BsOrder> GetListExt(int? status, string remark, DateTime? startTime, DateTime? endTime)
+public List<BsOrder> GetListExt(int? status, string remark, DateTime? startTime, DateTime? endTime, string ids)
 {
     using (var session = DBHelper.GetSession())
     {
@@ -418,10 +431,106 @@ public List<BsOrder> GetListExt(int? status, string remark, DateTime? startTime,
 
         sql.AppendIf(endTime.HasValue, " and t.order_time <= @endTime ", sql.ForDateTime(endTime.Value));
 
+        sql.Append(" and t.id in @ids ", sql.ForList(ids.Split(',').ToList()));
+
         sql.Append(" order by t.order_time desc, t.id asc ");
 
         List<BsOrder> list = session.FindListBySql<BsOrder>(sql.SQL, sql.Params);
         return list;
+    }
+}
+```
+
+### 使用Lambda表达式单表查询
+
+单表分页查询使用ToPageList替换ToList即可
+
+```C#
+public void TestQueryByLambda6()
+{
+    using (var session = DBHelper.GetSession())
+    {
+        SqlString<BsOrder> sql = session.CreateSqlString<BsOrder>();
+
+        string remark = "测试";
+
+        List<BsOrder> list = sql.Query()
+
+            .WhereIf<BsOrder>(!string.IsNullOrWhiteSpace(remark),
+                t => t.Remark.Contains(remark)
+                && t.CreateTime < DateTime.Now
+                && t.CreateUserid == "10")
+
+            .OrderByDescending(t => t.OrderTime).OrderBy(t => t.Id)
+            .ToList();
+
+        foreach (BsOrder item in list)
+        {
+            Console.WriteLine(ModelToStringUtil.ToString(item));
+        }
+    }
+}
+```
+
+### 使用Lambda表达式联表分页查询(简单的联表查询，复杂情况请使用原生SQL或原生SQL和Lambda表达式混写)
+
+```C#
+public void TestQueryByLambda7()
+{
+    using (var session = DBHelper.GetSession())
+    {
+        SqlString<BsOrder> sql = session.CreateSqlString<BsOrder>();
+
+        int total;
+        List<string> idsNotIn = new List<string>() { "100007", "100008", "100009" };
+
+        List<BsOrder> list = sql.Query()
+            .Select<SysUser>(u => u.UserName, t => t.OrderUserName)
+            .Select<SysUser>(u => u.RealName, t => t.OrderUserRealName)
+            .LeftJoin<SysUser>((t, u) => t.OrderUserid == u.Id)
+            .LeftJoin<BsOrderDetail>((t, d) => t.Id == d.OrderId)
+            .Where<SysUser, BsOrderDetail>((t, u, d) => t.Remark.Contains("订单") && u.CreateUserid == "1" && d.GoodsName != null)
+            .WhereIf<BsOrder>(true, t => t.Remark.Contains("测试"))
+            .WhereIf<BsOrder>(true, t => !idsNotIn.Contains(t.Id))
+            .WhereIf<SysUser>(true, u => u.CreateUserid == "1")
+            .OrderByDescending(t => t.OrderTime).OrderBy(t => t.Id)
+            .ToPageList(1, 20, out total);
+
+        foreach (BsOrder item in list)
+        {
+            Console.WriteLine(ModelToStringUtil.ToString(item));
+        }
+    }
+}
+```
+
+### 原生SQL和Lambda表达式混写
+
+```C#
+public void TestQueryByLambda9()
+{
+    using (var session = DBHelper.GetSession())
+    {
+        SqlString<BsOrder> sql = session.CreateSqlString<BsOrder>(@"
+            select t.*, u.real_name as OrderUserRealName
+            from bs_order t
+            left join sys_user u on t.order_userid=u.id
+            where 1=1");
+
+        List<BsOrder> list = sql.Where(t => t.Status == int.Parse("0")
+            && t.Status == new BsOrder().Status
+            && t.Remark.Contains("订单")
+            && t.Remark != null
+            && t.OrderTime >= new DateTime(2010, 1, 1)
+            && t.OrderTime <= DateTime.Now.AddDays(1))
+            .WhereIf<SysUser>(true, u => u.CreateTime < DateTime.Now)
+            .OrderByDescending(t => t.OrderTime).OrderBy(t => t.Id)
+            .ToList();
+
+        foreach (BsOrder item in list)
+        {
+            Console.WriteLine(ModelToStringUtil.ToString(item));
+        }
     }
 }
 ```

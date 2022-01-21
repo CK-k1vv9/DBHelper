@@ -19,5 +19,10 @@ namespace Models
         /// 下单用户姓名
         /// </summary>
         public string OrderUserRealName { get; set; }
+
+        /// <summary>
+        /// 下单用户名
+        /// </summary>
+        public string OrderUserName { get; set; }
     }
 }

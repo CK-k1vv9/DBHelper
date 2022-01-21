@@ -51,6 +51,9 @@
   <ItemGroup>
     <Compile Include="Attributes\AutoIncrementAttribute.cs" />
     <Compile Include="Attributes\DBTableAttribute.cs" />
+    <Compile Include="Enums\ExpValueType.cs" />
+    <Compile Include="Enums\SqlStringMethod.cs" />
+    <Compile Include="Models\ExpValue.cs" />
     <Compile Include="Models\PropertyInfoEx.cs" />
     <Compile Include="Models\SqlValue.cs" />
     <Compile Include="SessionHelper.cs" />
@@ -87,8 +90,10 @@
     <Compile Include="Session\ISessionTransaction.cs" />
     <Compile Include="Session\ISessionUpdate.cs" />
     <Compile Include="Utils\EmitUtil.cs" />
+    <Compile Include="Utils\ExpressionHelper.cs" />
     <Compile Include="Utils\PropertiesCache.cs" />
     <Compile Include="Utils\SqlString.cs" />
+    <Compile Include="Utils\SqlStringT.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

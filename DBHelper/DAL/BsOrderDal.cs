@@ -277,7 +277,7 @@ namespace DAL
         /// <summary>
         /// 查询集合
         /// </summary>
-        public List<BsOrder> GetList(int? status, string remark, DateTime? startTime, DateTime? endTime)
+        public List<BsOrder> GetList(int? status, string remark, DateTime? startTime, DateTime? endTime, string ids)
         {
             using (var session = DBHelper.GetSession())
             {
@@ -294,6 +294,11 @@ namespace DAL
                 sql.AppendIf(startTime.HasValue, " and t.order_time>=STR_TO_DATE(@startTime, '%Y-%m-%d %H:%i:%s') ", startTime.Value.ToString("yyyy-MM-dd HH:mm:ss"));
 
                 sql.AppendIf(endTime.HasValue, " and t.order_time<=STR_TO_DATE(@endTime, '%Y-%m-%d %H:%i:%s') ", endTime.Value.ToString("yyyy-MM-dd HH:mm:ss"));
+
+                int index = 0;
+                string[] idArr = ids.Split(',');
+                string args = string.Join(",", idArr.ToList().ConvertAll<string>(a => "@id" + index++));
+                sql.Append(" and t.id in (" + args + ") ", idArr);
 
                 sql.Append(" order by t.order_time desc, t.id asc ");
 
@@ -395,7 +400,7 @@ namespace DAL
         /// <summary>
         /// 查询集合
         /// </summary>
-        public List<BsOrder> GetListExt(int? status, string remark, DateTime? startTime, DateTime? endTime)
+        public List<BsOrder> GetListExt(int? status, string remark, DateTime? startTime, DateTime? endTime, string ids)
         {
             using (var session = DBHelper.GetSession())
             {
@@ -412,6 +417,8 @@ namespace DAL
                 sql.AppendIf(startTime.HasValue, " and t.order_time >= @startTime ", sql.ForDateTime(startTime.Value));
 
                 sql.AppendIf(endTime.HasValue, " and t.order_time <= @endTime ", sql.ForDateTime(endTime.Value));
+
+                sql.Append(" and t.id in @ids ", sql.ForList(ids.Split(',').ToList()));
 
                 sql.Append(" order by t.order_time desc, t.id asc ");
 

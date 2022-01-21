@@ -79,7 +79,7 @@ namespace DBUtil
         /// <summary>
         /// 获取实体类属性
         /// </summary>
-        private static PropertyInfoEx[] GetEntityProperties(Type type)
+        public static PropertyInfoEx[] GetEntityProperties(Type type)
         {
             return PropertiesCache.TryGet<PropertyInfoEx[]>(type, () =>
             {
@@ -111,7 +111,7 @@ namespace DBUtil
         /// <summary>
         /// 创建主键查询条件
         /// </summary>
-        private string CreatePkCondition(Type type, object val)
+        private static string CreatePkCondition(Type type, object val)
         {
             StringBuilder sql = new StringBuilder();
 
@@ -145,7 +145,7 @@ namespace DBUtil
         /// <summary>
         /// 判断是否是自增的主键
         /// </summary>
-        private bool IsAutoIncrementPk(Type modelType, PropertyInfo propertyInfo, bool autoIncrement)
+        private static bool IsAutoIncrementPk(Type modelType, PropertyInfo propertyInfo, bool autoIncrement)
         {
             if (propertyInfo.GetCustomAttributes(typeof(DBKeyAttribute), false).Length > 0)
             {
@@ -165,7 +165,7 @@ namespace DBUtil
         /// <summary>
         /// 获取数据库表名
         /// </summary>
-        private string GetTableName(Type type)
+        public static string GetTableName(Type type)
         {
             DBTableAttribute dbTableAttribute = type.GetCustomAttribute<DBTableAttribute>();
             if (dbTableAttribute != null && !string.IsNullOrWhiteSpace(dbTableAttribute.TableName))
@@ -183,7 +183,7 @@ namespace DBUtil
         /// <summary>
         /// 过滤SQL防注入
         /// </summary>
-        private void SqlFilter(ref string sql)
+        private static void SqlFilter(ref string sql)
         {
             sql = sql.Trim();
             string ignore = string.Empty;

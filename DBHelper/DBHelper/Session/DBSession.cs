@@ -150,7 +150,17 @@ namespace DBUtil
         /// </summary>
         public SqlString CreateSqlString(string sql = null, params object[] args)
         {
-            return new SqlString(_provider, sql, args);
+            return new SqlString(_provider, this, sql, args);
+        }
+        #endregion
+
+        #region 创建SqlString对象
+        /// <summary>
+        /// 创建SqlString对象
+        /// </summary>
+        public SqlString<T> CreateSqlString<T>(string sql = null, params object[] args) where T : new()
+        {
+            return new SqlString<T>(_provider, this, sql, args);
         }
         #endregion
 

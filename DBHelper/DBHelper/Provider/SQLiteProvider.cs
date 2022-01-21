@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SQLite;
@@ -117,6 +118,14 @@ namespace DBUtil
         public SqlValue ForDateTime(DateTime dateTime)
         {
             //todo:ForDateTime
+            throw new NotImplementedException();
+        }
+        #endregion
+
+        #region ForList
+        public SqlValue ForList(IList list)
+        {
+            //todo:ForList
             throw new NotImplementedException();
         }
         #endregion

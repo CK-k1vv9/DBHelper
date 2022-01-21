@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
@@ -71,6 +72,11 @@ namespace DBUtil
         /// 创建 日期时间类型转换 SQL
         /// </summary>
         SqlValue ForDateTime(DateTime dateTime);
+
+        /// <summary>
+        /// 创建 in 或 not in SQL
+        /// </summary>
+        SqlValue ForList(IList list);
 
     }
 }

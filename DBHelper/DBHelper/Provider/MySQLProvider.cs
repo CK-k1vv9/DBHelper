@@ -1,5 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
@@ -115,6 +116,20 @@ namespace DBUtil
         public SqlValue ForDateTime(DateTime dateTime)
         {
             return new SqlValue("STR_TO_DATE({0}, '%Y-%m-%d %H:%i:%s')", dateTime.ToString("yyyy-MM-dd HH:mm:ss"));
+        }
+        #endregion
+
+        #region ForList
+        public SqlValue ForList(IList list)
+        {
+            List<string> argList = new List<string>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                argList.Add("@id" + i);
+            }
+            string args = string.Join(",", argList);
+
+            return new SqlValue("(" + args + ")", list);
         }
         #endregion
 
