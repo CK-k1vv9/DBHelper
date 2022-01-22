@@ -367,5 +367,33 @@ namespace DBHelperTest
         }
         #endregion
 
+        #region 测试查询订单集合(使用 Lambda 表达式)(临时测试)
+        [TestMethod]
+        public void TestQueryByLambda10()
+        {
+            using (var session = DBHelper.GetSession())
+            {
+                SqlString<BsOrder> sql = session.CreateSqlString<BsOrder>();
+
+                string remark = "测试";
+
+                List<BsOrder> list = sql.Query()
+
+                    .WhereIf(!string.IsNullOrWhiteSpace(remark),
+                        t => t.Remark.Contains(remark)
+                        && t.CreateTime < DateTime.Now
+                        && !t.CreateUserid.Contains("123"))
+
+                    .OrderByDescending(t => t.OrderTime).OrderBy(t => t.Id)
+                    .ToList();
+
+                foreach (BsOrder item in list)
+                {
+                    Console.WriteLine(ModelToStringUtil.ToString(item));
+                }
+            }
+        }
+        #endregion
+
     }
 }
