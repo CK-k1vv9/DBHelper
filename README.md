@@ -37,6 +37,10 @@
 1. VS2015
 2. .NET Framework 4.5.2
 
+## .NET Core 版(.NET 5)源码地址：
+
+[https://gitee.com/s0611163/DBHelperCore](https://gitee.com/s0611163/DBHelperCore)
+
 ## 作者邮箱
 
     651029594@qq.com
