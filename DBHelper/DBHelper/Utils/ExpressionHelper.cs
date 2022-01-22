@@ -249,7 +249,7 @@ namespace DBUtil
 
                     string markKey = _provider.GetParameterMark() + expValue.MemberAliasName;
 
-                    result.Sql = string.Format("{0}.{1} like {2}", expValue.MemberParentName, expValue.MemberName, string.Format(sqlValue.Sql, markKey));
+                    result.Sql = string.Format("{0}.{1} like {2}", expValue.MemberParentName, expValue.MemberDBField, string.Format(sqlValue.Sql, markKey));
                     result.DbParameters.Add(_provider.GetDbParameter(expValue.MemberAliasName, sqlValue.Value));
                 }
                 else // 支持 in 和 not in 例: t => idList.Contains(t.Id)
