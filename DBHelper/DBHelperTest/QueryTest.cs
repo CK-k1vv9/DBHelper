@@ -382,7 +382,7 @@ namespace DBHelperTest
                     .WhereIf(!string.IsNullOrWhiteSpace(remark),
                         t => t.Remark.Contains(remark)
                         && t.CreateTime < DateTime.Now
-                        && !t.CreateUserid.Contains("123"))
+                        && !t.CreateUserid.Contains(string.Format("12{0}", 3)))
 
                     .OrderByDescending(t => t.OrderTime).OrderBy(t => t.Id)
                     .ToList();

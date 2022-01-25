@@ -300,22 +300,7 @@ namespace DBUtil
             }
             else // 支持 ToString、Parse 等其它方法
             {
-                List<object> args = new List<object>();
-                foreach (Expression argExp in exp.Arguments.ToArray())
-                {
-                    args.Add(InvokeValue(argExp));
-                }
-
-                if (exp.Object != null)
-                {
-                    ExpValue obj = VisitValue(exp.Object);
-                    result.Value = exp.Method.Invoke(obj.Value, args.ToArray());
-                }
-                else
-                {
-                    result.Value = exp.Method.Invoke(null, args.ToArray());
-                }
-
+                result.Value = ReflectionValue(exp, null);
                 result.Type = ExpValueType.OnlyValue;
             }
 
@@ -348,36 +333,9 @@ namespace DBUtil
                 }
                 else
                 {
-                    object obj = ReflectionValue(exp as MemberExpression); // 例: t => t.OrderTime < DateTime.Now  例: t => t.Remark.Contains(new BsOrder().Remark)
-                    object value = null;
-                    if (parent != null)
-                    {
-                        if (parent.Member is PropertyInfo) // 支持传变量
-                        {
-                            PropertyInfo propertyInfo = parent.Member as PropertyInfo;
-                            value = propertyInfo.GetValue(obj);
-                        }
-                        else if (parent.Member is FieldInfo)
-                        {
-                            FieldInfo propertyInfo = parent.Member as FieldInfo;
-                            value = propertyInfo.GetValue(obj);
-                        }
-                        else
-                        {
-                            throw new Exception("不支持");
-                        }
-
-                        if (value != null)
-                        {
-                            result.Value = value;
-                            result.Type = ExpValueType.OnlyValue;
-                        }
-                    }
-                    else
-                    {
-                        result.Value = obj;
-                        result.Type = ExpValueType.OnlyValue;
-                    }
+                    object obj = ReflectionValue(exp, parent); // 例: t => t.OrderTime < DateTime.Now  例: t => t.Remark.Contains(new BsOrder().Remark)
+                    result.Value = obj;
+                    result.Type = ExpValueType.OnlyValue;
                 }
             }
             else if (exp.NodeType == ExpressionType.Constant) // 支持常量、null
@@ -434,34 +392,13 @@ namespace DBUtil
         {
             object result = string.Empty;
 
-            if (exp is MemberExpression)
-            {
-                MemberExpression memberExp = exp as MemberExpression;
-
-                if (memberExp.Expression != null)
-                {
-                    if (memberExp.Expression is ConstantExpression) // not in 会走这里
-                    {
-                        result = ReflectionValue(memberExp as MemberExpression);
-                    }
-                }
-                else
-                {
-                    throw new Exception("不支持");
-                }
-            }
-            else if (exp is ConstantExpression)  //常量
+            if (exp.NodeType == ExpressionType.Constant)  //常量
             {
                 result = VisitConstant(exp);
             }
-            else if (exp.NodeType == ExpressionType.Call) //toString 外部方法
-            {
-                ExpValue expValue = VisitMethodCall(exp as MethodCallExpression);
-                result = expValue.Value;
-            }
             else
             {
-                throw new Exception("不支持");
+                result = Expression.Lambda(exp).Compile().DynamicInvoke();
             }
 
             return result;
@@ -469,50 +406,16 @@ namespace DBUtil
         #endregion
 
         #region ReflectionValue
-        private object ReflectionValue(MemberExpression member)
+        private object ReflectionValue(Expression member, MemberExpression parent)
         {
-            if (member.Expression != null)
+            object result = Expression.Lambda(member).Compile().DynamicInvoke();
+
+            if (result != null && result.GetType().IsClass && result.GetType() != typeof(string) && parent != null)
             {
-                if (member.Expression is ConstantExpression) // 支持传变量
-                {
-                    object obj = VisitConstant(member.Expression);
-                    return (member.Member as FieldInfo).GetValue(obj);
-                }
-                else if (member.Expression is NewExpression) // 例: exp = new BsOrder().Remark
-                {
-                    NewExpression newExp = member.Expression as NewExpression;
-                    object obj = newExp.Constructor.Invoke(null);
-                    if (member.Member is PropertyInfo)
-                    {
-                        PropertyInfo propertyInfo = member.Member as PropertyInfo;
-                        return propertyInfo.GetValue(obj);
-                    }
-                    else if (member.Member is FieldInfo)
-                    {
-                        FieldInfo propertyInfo = member.Member as FieldInfo;
-                        return propertyInfo.GetValue(obj);
-                    }
-                    else
-                    {
-                        throw new Exception("不支持");
-                    }
-                }
-                else
-                {
-                    throw new Exception("不支持");
-                }
+                result = Expression.Lambda(parent).Compile().DynamicInvoke();
             }
-            else
-            {
-                if (member.Type == typeof(DateTime) && member.Member.Name == "Now") // 支持 DateTime.Now
-                {
-                    return DateTime.Now;
-                }
-                else
-                {
-                    throw new Exception("未知");
-                }
-            }
+
+            return result;
         }
         #endregion
 
