@@ -194,7 +194,7 @@ namespace DBUtil
 
             _sql.Remove(_sql.Length - 1, 1);
 
-            _sql.AppendFormat(" from {0} as {1}", DBSession.GetTableName(type), alias);
+            _sql.AppendFormat(" from {0} {1}", DBSession.GetTableName(type), alias);
 
             _sql.Append(" where 1=1 ");
 
@@ -263,7 +263,7 @@ namespace DBUtil
             string alias = sql.Split('=')[1].Split('.')[0].Trim();
 
             _sql.Replace("where 1=1", string.Empty);
-            _sql.AppendFormat(" left join {0} as {1} on {2} where 1=1 ", tableName, alias, sql);
+            _sql.AppendFormat(" left join {0} {1} on {2} where 1=1 ", tableName, alias, sql);
 
             return this;
         }
