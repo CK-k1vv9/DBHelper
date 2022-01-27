@@ -94,7 +94,7 @@ namespace DBUtil
             {
                 PropertyInfo propertyInfo = propertyInfoEx.PropertyInfo;
 
-                if (IsAutoIncrementPk(type, propertyInfo, autoIncrement)) continue;
+                if (IsAutoIncrementPk(type, propertyInfoEx, autoIncrement)) continue;
 
                 if (propertyInfo.GetCustomAttributes(typeof(DBFieldAttribute), false).Length > 0)
                 {
@@ -112,7 +112,7 @@ namespace DBUtil
                 PropertyInfoEx propertyInfoEx = propertyInfoList[i];
                 PropertyInfo propertyInfo = propertyInfoEx.PropertyInfo;
 
-                if (IsAutoIncrementPk(type, propertyInfo, autoIncrement)) continue;
+                if (IsAutoIncrementPk(type, propertyInfoEx, autoIncrement)) continue;
 
                 if (propertyInfo.GetCustomAttributes(typeof(DBFieldAttribute), false).Length > 0)
                 {
@@ -138,7 +138,7 @@ namespace DBUtil
             {
                 PropertyInfo propertyInfo = propertyInfoEx.PropertyInfo;
 
-                if (IsAutoIncrementPk(type, propertyInfo, autoIncrement)) continue;
+                if (IsAutoIncrementPk(type, propertyInfoEx, autoIncrement)) continue;
 
                 if (propertyInfo.GetCustomAttributes(typeof(DBFieldAttribute), false).Length > 0)
                 {
@@ -167,7 +167,7 @@ namespace DBUtil
                     PropertyInfoEx propertyInfoEx = propertyInfoList[i];
                     PropertyInfo propertyInfo = propertyInfoEx.PropertyInfo;
 
-                    if (IsAutoIncrementPk(type, propertyInfo, autoIncrement)) continue;
+                    if (IsAutoIncrementPk(type, propertyInfoEx, autoIncrement)) continue;
 
                     if (propertyInfo.GetCustomAttributes(typeof(DBFieldAttribute), false).Length > 0)
                     {

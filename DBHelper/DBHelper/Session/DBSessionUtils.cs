@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data.Objects.DataClasses;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -64,9 +63,7 @@ namespace DBUtil
             PropertyInfoEx[] propertyInfoList = GetEntityProperties(type);
             foreach (PropertyInfoEx propertyInfoEx in propertyInfoList)
             {
-                PropertyInfo propertyInfo = propertyInfoEx.PropertyInfo;
-
-                if (propertyInfo.GetCustomAttributes(typeof(DBKeyAttribute), false).Length > 0)
+                if (propertyInfoEx.IsDBKey)
                 {
                     return propertyInfoEx.FieldName;
                 }
@@ -81,17 +78,18 @@ namespace DBUtil
         /// </summary>
         public static PropertyInfoEx[] GetEntityProperties(Type type)
         {
-            return PropertiesCache.TryGet<PropertyInfoEx[]>(type, () =>
+            return PropertiesCache.TryGet<PropertyInfoEx[]>(type, modelType =>
             {
                 List<PropertyInfoEx> result = new List<PropertyInfoEx>();
                 PropertyInfo[] propertyInfoList = type.GetProperties();
                 foreach (PropertyInfo propertyInfo in propertyInfoList)
                 {
-                    if (propertyInfo.GetCustomAttribute<EdmRelationshipNavigationPropertyAttribute>() == null && propertyInfo.GetCustomAttribute<BrowsableAttribute>() == null)
+                    PropertyInfoEx propertyInfoEx = new PropertyInfoEx(propertyInfo);
+
+                    DBFieldAttribute dbFieldAttribute = propertyInfo.GetCustomAttribute<DBFieldAttribute>();
+                    if (dbFieldAttribute != null)
                     {
-                        PropertyInfoEx propertyInfoEx = new PropertyInfoEx(propertyInfo);
-                        DBFieldAttribute dbFieldAttribute = propertyInfo.GetCustomAttribute<DBFieldAttribute>();
-                        if (dbFieldAttribute != null && !string.IsNullOrWhiteSpace(dbFieldAttribute.FieldName))
+                        if (!string.IsNullOrWhiteSpace(dbFieldAttribute.FieldName))
                         {
                             propertyInfoEx.FieldName = dbFieldAttribute.FieldName;
                         }
@@ -99,8 +97,34 @@ namespace DBUtil
                         {
                             propertyInfoEx.FieldName = propertyInfo.Name;
                         }
-                        result.Add(propertyInfoEx);
+
+                        propertyInfoEx.IsDBField = true;
                     }
+                    else
+                    {
+                        propertyInfoEx.FieldName = propertyInfo.Name;
+                    }
+
+                    if (propertyInfo.GetCustomAttribute<DBKeyAttribute>() != null)
+                    {
+                        propertyInfoEx.IsDBKey = true;
+
+                        AutoIncrementAttribute modelAutoIncrementAttribute = modelType.GetCustomAttribute<AutoIncrementAttribute>();
+                        if (modelAutoIncrementAttribute != null)
+                        {
+                            propertyInfoEx.IsAutoIncrement = modelAutoIncrementAttribute.Value;
+                        }
+                        else
+                        {
+                            AutoIncrementAttribute propertyAutoIncrementAttribute = propertyInfo.GetCustomAttribute<AutoIncrementAttribute>();
+                            if (propertyAutoIncrementAttribute != null)
+                            {
+                                propertyInfoEx.IsAutoIncrement = propertyAutoIncrementAttribute.Value;
+                            }
+                        }
+                    }
+
+                    result.Add(propertyInfoEx);
                 }
                 return result.ToArray();
             });
@@ -121,10 +145,10 @@ namespace DBUtil
             {
                 PropertyInfo propertyInfo = propertyInfoEx.PropertyInfo;
 
-                if (propertyInfo.GetCustomAttributes(typeof(DBKeyAttribute), false).Length > 0)
+                if (propertyInfoEx.IsDBKey)
                 {
                     if (i != 0) sql.Append(" and ");
-                    object fieldValue = val.GetType().GetProperty(propertyInfo.Name).GetValue(val, null);
+                    object fieldValue = propertyInfo.GetValue(val, null);
                     if (fieldValue.GetType() == typeof(string) || fieldValue.GetType() == typeof(String))
                     {
                         sql.AppendFormat(" {0}='{1}'", propertyInfoEx.FieldName, fieldValue);
@@ -145,17 +169,18 @@ namespace DBUtil
         /// <summary>
         /// 判断是否是自增的主键
         /// </summary>
-        private static bool IsAutoIncrementPk(Type modelType, PropertyInfo propertyInfo, bool autoIncrement)
+        private static bool IsAutoIncrementPk(Type modelType, PropertyInfoEx propertyInfoEx, bool autoIncrement)
         {
-            if (propertyInfo.GetCustomAttributes(typeof(DBKeyAttribute), false).Length > 0)
+            if (propertyInfoEx.IsDBKey)
             {
-                AutoIncrementAttribute modelAutoIncrementAttribute = modelType.GetCustomAttribute<AutoIncrementAttribute>();
-                if (modelAutoIncrementAttribute != null) return modelAutoIncrementAttribute.Value;
-
-                AutoIncrementAttribute propertyAutoIncrementAttribute = propertyInfo.GetCustomAttribute<AutoIncrementAttribute>();
-                if (propertyAutoIncrementAttribute != null) return propertyAutoIncrementAttribute.Value;
-
-                return autoIncrement;
+                if (propertyInfoEx.IsAutoIncrement != null)
+                {
+                    return propertyInfoEx.IsAutoIncrement.Value;
+                }
+                else
+                {
+                    return autoIncrement;
+                }
             }
             return false;
         }

@@ -19,9 +19,9 @@ namespace DBUtil
         /// <summary>
         /// 获取对象
         /// </summary>
-        public static T TryGet<T>(Type type, Func<T> func)
+        public static T TryGet<T>(Type type, Func<Type, T> func)
         {
-            object obj = _dict.GetOrAdd(type, (key) => func());
+            object obj = _dict.GetOrAdd(type, key => func(key));
 
             return (T)obj;
         }
