@@ -107,6 +107,32 @@ namespace DBUtil
         #endregion
 
 
+        #region GetSingle<T> 执行一条计算查询结果语句，返回查询结果
+        /// <summary>
+        /// 执行一条计算查询结果语句，返回查询结果（object）
+        /// </summary>
+        /// <param name="sqlString">计算查询结果语句</param>
+        /// <returns>查询结果（object）</returns>
+        public T GetSingle<T>(string sqlString)
+        {
+            SqlFilter(ref sqlString);
+            if (_conn.State != ConnectionState.Open) _conn.Open();
+            using (DbCommand cmd = _provider.GetCommand(sqlString, _conn))
+            {
+                object obj = cmd.ExecuteScalar();
+
+                if ((Object.Equals(obj, null)) || (Object.Equals(obj, System.DBNull.Value)))
+                {
+                    return default(T);
+                }
+                else
+                {
+                    return (T)Convert.ChangeType(obj, typeof(T));
+                }
+            }
+        }
+        #endregion
+
         #region GetSingle 执行一条计算查询结果语句，返回查询结果
         /// <summary>
         /// 执行一条计算查询结果语句，返回查询结果（object）
@@ -128,6 +154,32 @@ namespace DBUtil
                 else
                 {
                     return obj;
+                }
+            }
+        }
+        #endregion
+
+        #region GetSingleAsync<T> 执行一条计算查询结果语句，返回查询结果
+        /// <summary>
+        /// 执行一条计算查询结果语句，返回查询结果（object）
+        /// </summary>
+        /// <param name="sqlString">计算查询结果语句</param>
+        /// <returns>查询结果（object）</returns>
+        public async Task<T> GetSingleAsync<T>(string sqlString)
+        {
+            SqlFilter(ref sqlString);
+            if (_conn.State != ConnectionState.Open) _conn.Open();
+            using (DbCommand cmd = _provider.GetCommand(sqlString, _conn))
+            {
+                object obj = await cmd.ExecuteScalarAsync();
+
+                if ((Object.Equals(obj, null)) || (Object.Equals(obj, System.DBNull.Value)))
+                {
+                    return default(T);
+                }
+                else
+                {
+                    return (T)Convert.ChangeType(obj, typeof(T));
                 }
             }
         }

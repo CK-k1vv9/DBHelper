@@ -35,7 +35,7 @@ namespace DAL
         {
             using (var session = DBHelper.GetSession())
             {
-                return int.Parse(session.GetSingle("select count(*) from sys_user").ToString());
+                return session.GetSingle<int>("select count(*) from sys_user");
             }
         }
         #endregion
@@ -63,7 +63,7 @@ namespace DAL
             {
                 info.CreateTime = DateTime.Now;
                 session.Insert(info);
-                long id = Convert.ToInt64(session.GetSingle("select @@IDENTITY"));
+                long id = session.GetSingle<long>("select @@IDENTITY");
                 return id;
             }
         }

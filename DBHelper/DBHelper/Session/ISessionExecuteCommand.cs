@@ -44,7 +44,17 @@ namespace DBUtil
         /// <summary>
         /// 查询单个值
         /// </summary>
+        T GetSingle<T>(string sqlString);
+
+        /// <summary>
+        /// 查询单个值
+        /// </summary>
         Task<object> GetSingleAsync(string sqlString);
+
+        /// <summary>
+        /// 查询单个值
+        /// </summary>
+        Task<T> GetSingleAsync<T>(string sqlString);
 
         /// <summary>
         /// 执行查询语句，返回DataSet
