@@ -417,13 +417,13 @@ namespace Models
         public int? BuildPeriod { get; set; }
 
         /// <summary>
-        /// 项目名称：合肥雪亮工程一期
+        /// 项目名称：
         /// </summary>
         [DBField("PROJECT_NAME")]
         public string ProjectName { get; set; }
 
         /// <summary>
-        /// 合肥市公安局，待确认
+        /// 
         /// </summary>
         [DBField("MANAGER_UNIT")]
         public string ManagerUnit { get; set; }
@@ -435,13 +435,13 @@ namespace Models
         public string ManagerUnitTel { get; set; }
 
         /// <summary>
-        /// 四创电子、自定义
+        /// 、自定义
         /// </summary>
         [DBField("MAINTAIN_UNIT")]
         public string MaintainUnit { get; set; }
 
         /// <summary>
-        /// 四创电子运维电话
+        /// 
         /// </summary>
         [DBField("MAINTAIN_UNIT_TEL")]
         public string MaintainUnitTel { get; set; }
